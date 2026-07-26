@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>5問でわかる ダイエットプラン診断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#e5f5e3;
+  --card:#fff;
+  --ink:#1a1a1a;
+  --ink2:#5b6672;
+  --indigo:#06c755;
+  --indigo-d:#05a648;
+  --ev:#06c755;
+  --ev-bg:#e5f7ea;
+  --null-bg:#faf1de;
+  --null:#8a6412;
+  --line:#dcece0;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.75;
+}
+h1,h2,h3,h4{font-family:"Zen Kaku Gothic New",sans-serif;}
+.wrap{max-width:520px;margin:0 auto;padding:0 16px 48px;}
+
+/* header */
+header{background:var(--indigo);color:#fff;padding:20px 0 18px;}
+header .wrap{padding-bottom:0;}
+header p{margin:0;font-size:13px;opacity:.9;}
+h1.title{font-size:19px;font-weight:700;margin:2px 0 0;}
+
+/* progress */
+.progress{display:flex;gap:4px;margin:16px 0 16px;}
+.pstep{flex:1;height:4px;border-radius:3px;background:var(--line);}
+.pstep.done{background:var(--indigo);}
+
+/* question */
+.qcard{margin-top:8px;}
+.qnum{font-size:12px;color:var(--indigo);font-weight:700;}
+.qtext{font-size:19px;font-weight:700;line-height:1.5;margin:6px 0 16px;}
+.opts{display:flex;flex-direction:column;gap:10px;}
+.opt{
+  text-align:left;width:100%;cursor:pointer;font:inherit;font-size:15.5px;
+  background:var(--card);border:1.5px solid var(--line);border-radius:12px;
+  padding:16px;color:var(--ink);min-height:52px;line-height:1.55;
+}
+.opt:active{background:#eafbf0;border-color:var(--indigo);}
+.opt:focus-visible{outline:3px solid #8fe6ac;outline-offset:1px;}
+.back{
+  background:none;border:none;font:inherit;font-size:14px;color:var(--ink2);
+  cursor:pointer;padding:10px 0;text-decoration:underline;margin-top:2px;
+}
+
+/* result */
+.rhead{padding:18px 0 4px;}
+.reyebrow{font-size:12px;color:var(--ev);font-weight:700;}
+.rname{font-size:22px;font-weight:900;margin:4px 0 8px;line-height:1.4;}
+.rtag{font-size:14.5px;color:var(--ink2);margin:0;}
+
+section.block{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-top:12px;}
+section.block h3{font-size:15px;margin:0 0 12px;color:var(--ink);}
+
+.action{padding:12px 0;border-top:1px solid var(--line);}
+.action:first-child{border-top:none;padding-top:0;}
+.action .do{font-size:15px;font-weight:500;margin:0 0 6px;}
+.action .why{font-size:13.5px;color:var(--ink2);margin:0 0 8px;}
+
+.evlink{
+  display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+  color:var(--ev);background:var(--ev-bg);border-radius:100px;padding:6px 12px;
+  text-decoration:none;
+}
+.evlink.null{color:var(--null);background:var(--null-bg);}
+.evlink::after{content:"→";font-weight:700;}
+.evmeta{display:block;font-size:11.5px;color:var(--ink2);margin-top:5px;}
+
+.addon{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;background:#fafbfc;}
+.addon h4{font-size:14px;margin:0 0 5px;}
+.addon p{font-size:13.5px;color:var(--ink2);margin:0 0 8px;}
+
+.limits{background:#fbf6ea;border:1px solid #ecdcc0;border-radius:14px;padding:16px 18px;margin-top:12px;}
+.limits h3{font-size:15px;margin:0 0 10px;color:#5c4c22;}
+.limits ul{margin:0;padding-left:1.1em;}
+.limits li{font-size:13px;color:#5f5334;margin-bottom:9px;line-height:1.65;}
+
+.safety{background:#fdf1f0;border:1px solid #eccdc8;border-radius:12px;padding:14px 16px;font-size:13px;color:#7a4038;margin-top:12px;}
+
+.btnrow{display:flex;gap:10px;margin-top:16px;}
+.btn{
+  flex:1;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;border-radius:11px;
+  padding:14px;border:1.5px solid var(--indigo);background:var(--indigo);color:#fff;min-height:48px;
+}
+.btn.ghost{background:#fff;color:var(--indigo);}
+.btn:active{background:var(--indigo-d);border-color:var(--indigo-d);}
+.btn.ghost:active{background:var(--ev-bg);}
+.email-block{margin-top:18px;}
+.email-block h3{font-size:15px;margin:0 0 10px;color:var(--ink);}
+.email-form{display:flex;flex-direction:column;gap:10px;}
+.email-field{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;}
+.email-note{font-size:13px;color:var(--ink2);margin:0;}
+.email-feedback{font-size:13px;margin:0 0 2px;}
+.email-feedback.success{color:#1f7a2d;}
+.email-feedback.error{color:#a63232;}
+.email-actions{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.email-actions .btn{flex:1;min-width:140px;}
+footer{padding:20px 0 8px;color:var(--ink2);font-size:11.5px;text-align:center;}
+
+@media print{header,.btnrow{display:none;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <p>ヒト臨床試験（RCT中心）に基づく</p>
+    <h1 class="title">5問でダイエットプラン診断</h1>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="progress" id="progress"></div>
+  <div id="app"></div>
+</main>
+
+<script>
+/* ============ EVIDENCE ============ */
+const EV = {
+  lookahead:{t:"Look AHEAD試験",n:"5,145名・1年",f:"食事+運動+行動支援で体重が約8.6%減（対照は0.7%減）。長期の心血管イベント抑制は示せず試験中止。",mixed:1,
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Look+AHEAD+diabetes+care+2007+intensive+lifestyle"},
+  villareal:{t:"Villareal RCT",n:"107名・1年",f:"食事+運動の併用群が身体機能を最大改善。筋肉量・骨密度の減少も抑えられた。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Villareal+weight+loss+exercise+elderly+obese+NEJM+2011"},
+  jamshed:{t:"eTRE試験(JAMA)",n:"90名・14週",f:"食事を8時間に収めた群は体重減少が大きい。ただし体脂肪の減少は有意差なし。",mixed:1,
+    url:"https://jamanetwork.com/journals/jamainternalmedicine/fullarticle/2794819"},
+  treaty:{t:"TREATY試験(NEJM)",n:"139名・12か月",f:"時間制限食を足しても、カロリー制限のみと比べ減量に有意差なし。",isnull:1,
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Liu+time-restricted+eating+weight+loss+NEJM+2022"},
+  longland:{t:"高たんぱく試験",n:"40名・4週",f:"高たんぱく+筋トレで除脂肪量が増え体脂肪が減少。小規模・短期の試験。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Longland+higher+protein+resistance+training+2016"},
+  predimedplus:{t:"PREDIMED-Plus試験",n:"626名・12か月",f:"地中海食+カロリー制限+運動+行動支援で約3.2kg減。食事のみでは約0.7kg減。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=PREDIMED-Plus+Salas-Salvado+2019+weight+loss"},
+  predimed:{t:"PREDIMED試験",n:"約7,447名・平均4.8年",f:"地中海食で主要心血管イベントが約30%減少。減量目的の試験ではない。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=PREDIMED+Estruch+2018+cardiovascular"},
+  ma2015:{t:"食物繊維単一目標試験",n:"240名・12か月",f:"「食物繊維30g」だけの単純目標と、本格的な食事指導で減量幅に有意差なし。",isnull:1,
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Ma+fiber+goal+simple+diet+2015+metabolic+syndrome"},
+  dietfits:{t:"DIETFITS試験(JAMA)",n:"609名・12か月",f:"低脂質食と低糖質食で減量幅に有意差なし。遺伝子型による向き不向きも未確認。",isnull:1,
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Gardner+DIETFITS+JAMA+2018"},
+  wewege:{t:"HIIT比較メタ解析",n:"13試験・424名",f:"高強度と中強度で体脂肪減少はほぼ同等。HIITは約40%短時間で到達。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Wewege+HIIT+moderate+intensity+fat+loss+2017"},
+  bravata:{t:"歩数計メタ解析(JAMA)",n:"26研究・2,767名",f:"歩数目標を持つと1日+2,100歩、BMIが約0.38低下。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Bravata+pedometer+step+count+JAMA+2007"},
+  tasali:{t:"睡眠延長RCT(JAMA)",n:"80名・2週",f:"睡眠が1.2時間延び、実測エネルギー摂取が1日約270kcal減少。",
+    url:"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8822469/"},
+  choice:{t:"CHOICE試験",n:"318名・6か月",f:"甘い飲料を水/無糖に置換しても主要評価の減量率に有意差なし。副次的に5%減量オッズは約2.3倍。",mixed:1,
+    url:"https://ajcn.nutrition.org/article/S0002-9165(23)01551-4/fulltext"},
+  madjd:{t:"水vs無糖飲料試験",n:"24週",f:"同じ減量食で、水にした群がより減量（約8.8kg vs 7.6kg）。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Madjd+water+diet+beverage+weight+loss+2015"},
+  shukla:{t:"食べる順番試験",n:"11名・単回",f:"野菜/たんぱく質を先に食べると食後血糖上昇が約29〜37%抑制。ごく小規模な試験。",
+    url:"https://pubmed.ncbi.nlm.nih.gov/?term=Shukla+food+order+postprandial+glucose+diabetes+2015"}
+};
+
+/* ============ QUESTIONS ============ */
+const QUESTIONS = [
+  {q:"減量の最大の壁はどれ？",opts:[
+    {label:"食事の時間が遅い・不規則",s:{A:3},f:[]},
+    {label:"記録・管理が続かない",s:{D:3},f:[]},
+    {label:"痩せても筋肉が落ちる",s:{B:3},f:[]},
+    {label:"運動の時間がとれない",s:{E:3},f:["steps"]}
+  ]},
+  {q:"平日の睡眠時間は？",opts:[
+    {label:"6時間未満が多い",s:{A:1},f:["sleep_strong"]},
+    {label:"6〜7時間くらい",s:{},f:["sleep_mild"]},
+    {label:"7時間以上とれている",s:{},f:[]},
+    {label:"日によってバラバラ",s:{A:1},f:["sleep_mild"]}
+  ]},
+  {q:"運動にあてられる時間は？",opts:[
+    {label:"週1回未満",s:{E:2},f:["steps"]},
+    {label:"週2〜3回・自宅で30分",s:{B:1,E:1},f:[]},
+    {label:"週3回以上・ジムも可",s:{B:2},f:[]},
+    {label:"歩く/走るのが好き",s:{C:2},f:["steps"]}
+  ]},
+  {q:"ふだんの食生活は？",opts:[
+    {label:"自炊中心",s:{C:3},f:[]},
+    {label:"外食・中食が中心",s:{D:2,C:1},f:[]},
+    {label:"主食中心で野菜少なめ",s:{D:3},f:["order"]},
+    {label:"甘い飲み物が習慣",s:{D:1},f:["drink"]}
+  ]},
+  {q:"体重以外で気になることは？",opts:[
+    {label:"特になし",s:{A:1,B:1,C:1,D:1,E:1},f:[]},
+    {label:"血糖値・HbA1c",s:{A:2},f:["order"]},
+    {label:"内臓脂肪・血圧",s:{C:3},f:[]},
+    {label:"筋肉量・体力の衰え",s:{B:3},f:[]}
+  ]}
+];
+
+/* ============ PLANS ============ */
+const PLANS = {
+  A:{name:"食べる時間を整えるプラン",tag:"食事を8〜10時間の枠に収めて、総量を落としやすくします。",
+    diet:[
+      {do:"食事は朝8時〜夕方18時など、8〜10時間の枠に収める",why:"早い時間帯に寄せた群は体重減少が大きい（体脂肪の差はなし）",ev:"jamshed"},
+      {do:"時間の枠だけを目的にせず、枠の中で食べすぎない",why:"時間制限そのものの上乗せ効果は12か月の試験で確認できず",ev:"treaty"}
+    ],
+    ex:[
+      {do:"週2回、脚・背中など大きい筋肉を10〜15分",why:"運動併用群は筋肉量・骨密度の減少が抑えられた",ev:"villareal"},
+      {do:"週合計150分の早歩きなど中強度の活動",why:"食事+運動+行動支援で1年約8.6%減量",ev:"lookahead"}
+    ]},
+  B:{name:"筋肉を残して落とすプラン",tag:"減った体重を脂肪側に寄せる設計です。",
+    diet:[
+      {do:"体重1kgあたり1.2〜1.6gのたんぱく質を3食に分ける",why:"高たんぱく+筋トレ群は除脂肪量が増え体脂肪が減少",ev:"longland"},
+      {do:"減量は緩やかに（週0.5〜1%目安）",why:"緩やかな減量+運動の群が身体機能・筋肉量の維持で最良",ev:"villareal"}
+    ],
+    ex:[
+      {do:"週2〜3回レジスタンス運動（8〜12回×2〜3セット）",why:"高たんぱく食の効果は筋トレとセットで確認されている",ev:"longland"},
+      {do:"筋トレ日以外に早歩き20〜30分",why:"運動併用群が身体機能・除脂肪量ともに最良の結果",ev:"villareal"}
+    ]},
+  C:{name:"地中海式×活動量プラン",tag:"体重だけでなく内臓脂肪・血圧まで含めて動かします。",
+    diet:[
+      {do:"オリーブオイル・ナッツ・魚・豆・野菜を毎食に",why:"食事+運動+行動支援で12か月約3.2kg減（食事のみは0.7kg減）",ev:"predimedplus"},
+      {do:"赤身肉・加工肉・砂糖入り飲料の頻度を落とす",why:"この食事パターンは主要心血管イベントを約30%低下（減量試験ではない）",ev:"predimed"}
+    ],
+    ex:[
+      {do:"週150〜300分の中強度有酸素（早歩き・自転車等）",why:"減量が出た群は活動量の増加が介入に含まれていた",ev:"predimedplus"},
+      {do:"週2回の筋トレを追加",why:"運動併用で筋肉量・骨密度の減少が抑制",ev:"villareal"}
+    ]},
+  D:{name:"ひとつだけ守るプラン",tag:"記録も計算もせず、ルールを1つに絞ります。",
+    diet:[
+      {do:"「食物繊維1日30g」だけを目標にする",why:"単一目標群と本格的な食事指導群で12か月の減量幅に有意差なし",ev:"ma2015"},
+      {do:"外食時は主食を小盛り＋たんぱく質を1品足す",why:"低脂質・低糖質どちらでも12か月の結果は同等",ev:"dietfits"}
+    ],
+    ex:[
+      {do:"「1日+2,000歩」を数値目標にする",why:"歩数目標を持つ群は1日+2,100歩、BMIが約0.38低下",ev:"bravata"},
+      {do:"余力があれば週2回・自重筋トレ10分",why:"運動併用群は筋肉量・骨密度の減少が抑制",ev:"villareal"}
+    ]},
+  E:{name:"短時間・高効率プラン",tag:"まとまった時間がなくても続けられる設計です。",
+    diet:[
+      {do:"毎食たんぱく質1品＋食物繊維30g目標の2つだけ",why:"単純目標でも本格指導と12か月の結果は同等",ev:"ma2015"}
+    ],
+    ex:[
+      {do:"週2〜3回・10〜20分の高強度インターバル",why:"HIITは中強度と同等の体脂肪減少に約40%短時間で到達",ev:"wewege"},
+      {do:"日常の歩数を+2,000歩増やす",why:"歩数目標群はBMIが約0.38低下",ev:"bravata"},
+      {do:"週2回・各10分の自重筋トレ",why:"運動併用群は筋肉量・骨密度の減少が抑制",ev:"villareal"}
+    ],
+    caution:"HIITは負荷が高い方法です。心臓・血圧の疾患や運動未経験の方は医師に相談してください。"}
+};
+
+const MODULES = {
+  sleep_strong:{name:"睡眠を先に伸ばす",body:"就寝を30〜60分早め、寝床の時間を8時間台に。",ev:"tasali"},
+  sleep_mild:{name:"睡眠をあと30分",body:"やや短めです。寝床の時間をあと30分広げてみてください。",ev:"tasali"},
+  drink:{name:"飲み物を水に置き換える",body:"甘い飲み物を水に。単独の効果は控えめなので他の項目と併用を。",ev:"choice"},
+  order:{name:"食べる順番を変える",body:"野菜・たんぱく質を先に、主食は最後に。",ev:"shukla"},
+  steps:{name:"歩数を数値目標にする",body:"「今より1日+2,000歩」を数値で決めてください。",ev:"bravata"}
+};
+
+/* ============ ENGINE ============ */
+let step = 0;
+const answers = [];
+const app = document.getElementById('app');
+const prog = document.getElementById('progress');
+const STORAGE_KEY = 'dietPlanRegistration';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function emailIsValid(email){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);}
+function loadRegistration(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  try{return raw?JSON.parse(raw):null;}catch{return null;}
+}
+function saveRegistration(email,data){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({email,registeredAt:new Date().toISOString(),data}));
+}
+function buildResultSummary(best,p,mods){
+  let body = 'ダイエットプラン診断の結果\n';
+  body += 'プラン: '+p.name+'\n'+p.tag+'\n\n';
+  body += '【食事】\n';
+  p.diet.forEach(a=>{ body += '・'+a.do+'\n'; });
+  body += '\n【運動】\n';
+  p.ex.forEach(a=>{ body += '・'+a.do+'\n'; });
+  if(mods.length){
+    body += '\n【追加項目】\n';
+    mods.forEach(k=>{ body += '・'+MODULES[k].name+' - '+MODULES[k].body+'\n'; });
+  }
+  body += '\nこのメールは診断結果の受け取り用です。';
+  return body;
+}
+
+function renderProgress(){
+  prog.innerHTML = QUESTIONS.map((_,i)=>'<div class="pstep '+(i<step?'done':'')+'"></div>').join('');
+}
+
+function renderQuestion(){
+  renderProgress();
+  const q = QUESTIONS[step];
+  let h = '<div class="qcard"><div class="qnum">'+(step+1)+' / '+QUESTIONS.length+'</div>';
+  h += '<div class="qtext">'+esc(q.q)+'</div><div class="opts">';
+  q.opts.forEach((o,i)=>{ h += '<button class="opt" data-i="'+i+'">'+esc(o.label)+'</button>'; });
+  h += '</div></div>';
+  if(step>0) h += '<button class="back" id="backBtn">← 前の質問に戻る</button>';
+  app.innerHTML = h;
+  app.querySelectorAll('.opt').forEach(b=>{
+    b.addEventListener('click',()=>{
+      answers[step] = QUESTIONS[step].opts[parseInt(b.dataset.i,10)];
+      step++;
+      if(step < QUESTIONS.length) renderQuestion(); else renderResult();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+  const bb = document.getElementById('backBtn');
+  if(bb) bb.addEventListener('click',()=>{ step--; renderQuestion(); });
+}
+
+function evLink(key){
+  const e = EV[key];
+  if(!e) return '';
+  const cls = (e.isnull||e.mixed) ? 'evlink null' : 'evlink';
+  const flag = e.isnull ? '［有意差なし］' : (e.mixed ? '［一部のみ有意］' : '');
+  return '<a class="'+cls+'" href="'+e.url+'" target="_blank" rel="noopener">エビデンスを見る'+flag+'</a>'
+       + '<span class="evmeta">'+esc(e.t)+' ・ '+esc(e.n)+' ・ '+esc(e.f)+'</span>';
+}
+
+function renderResult(){
+  renderProgress();
+  const scores = {A:0,B:0,C:0,D:0,E:0};
+  const flags = new Set();
+  answers.forEach(a=>{
+    Object.keys(a.s||{}).forEach(k=>scores[k]+=a.s[k]);
+    (a.f||[]).forEach(f=>flags.add(f));
+  });
+  if(flags.has('sleep_strong')) flags.delete('sleep_mild');
+  const q1key = Object.keys(answers[0].s||{})[0] || 'D';
+  let best = q1key, bestScore = -1;
+  ['A','B','C','D','E'].forEach(k=>{ if(scores[k] > bestScore){ bestScore = scores[k]; best = k; } });
+  const p = PLANS[best];
+
+  let h = '<div class="rhead"><div class="reyebrow">あなたのプラン</div>';
+  h += '<h2 class="rname">'+esc(p.name)+'</h2><p class="rtag">'+esc(p.tag)+'</p></div>';
+
+  h += '<section class="block"><h3>食事</h3>';
+  p.diet.forEach(a=>{
+    h += '<div class="action"><p class="do">'+esc(a.do)+'</p><p class="why">'+esc(a.why)+'</p>'+evLink(a.ev)+'</div>';
+  });
+  h += '</section>';
+
+  h += '<section class="block"><h3>運動</h3>';
+  p.ex.forEach(a=>{
+    h += '<div class="action"><p class="do">'+esc(a.do)+'</p><p class="why">'+esc(a.why)+'</p>'+evLink(a.ev)+'</div>';
+  });
+  if(p.caution) h += '<div class="safety">'+esc(p.caution)+'</div>';
+  h += '</section>';
+
+  const mods = ['sleep_strong','sleep_mild','drink','order','steps'].filter(k=>flags.has(k));
+  if(mods.length){
+    h += '<section class="block"><h3>あなたに追加した項目</h3>';
+    mods.forEach(k=>{
+      const m = MODULES[k];
+      h += '<div class="addon"><h4>'+esc(m.name)+'</h4><p>'+esc(m.body)+'</p>'+evLink(m.ev)+'</div>';
+    });
+    h += '</section>';
+  }
+
+  h += '<div class="limits"><h3>正直な限界</h3><ul>';
+  h += '<li>ここでの減量幅は多くが3〜12か月で2〜8kg程度です。急激な減量を示す試験ではありません。</li>';
+  h += '<li>オレンジ色の項目は「有意差なし／一部のみ有意」だった試験です。参考として扱ってください。</li>';
+  h += '<li>体質測定（血液・遺伝子など）に基づく診断ではなく、回答内容と臨床試験を照合したものです。</li>';
+  h += '</ul></div>';
+
+  h += '<div class="safety">妊娠中・治療中の病気がある方・未成年の方は、自己判断せず医師にご相談ください。この診断は医学的な診断・治療ではありません。</div>';
+
+  const registration = loadRegistration();
+  const registeredEmail = registration ? registration.email : '';
+  h += '<section class="block email-block"><h3>結果をメールで受け取る</h3>';
+  h += '<form id="emailForm" class="email-form">';
+  h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail) : '')+'</p>';
+  h += '<input class="email-field" id="emailInput" name="email" type="email" placeholder="メールアドレスを入力" value="'+esc(registeredEmail)+'" required>'; 
+  h += '<p class="email-note">登録すると診断結果をメール送信します。メールクライアントが起動しない場合はアドレスをコピーして手動で送信してください。</p>';
+  h += '<div class="email-actions"><button class="btn" type="submit" id="registerEmail">送信する</button></div>';
+  h += '</form></section>';
+
+  h += '<div class="btnrow"><button class="btn" id="restart">もう一度診断</button><button class="btn ghost" id="printBtn">保存</button></div>';
+  h += '<footer>引用はすべてヒト臨床試験です。リンク先で詳細を確認できます。</footer>';
+
+  app.innerHTML = h;
+  document.getElementById('restart').addEventListener('click',()=>{
+    step = 0; answers.length = 0; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'});
+  });
+  document.getElementById('printBtn').addEventListener('click',()=>window.print());
+  document.getElementById('emailForm').addEventListener('submit',event=>{
+    event.preventDefault();
+    const email = document.getElementById('emailInput').value.trim();
+    const feedback = document.getElementById('emailFeedback');
+    if(!emailIsValid(email)){
+      feedback.textContent = '有効なメールアドレスを入力してください。';
+      feedback.className = 'email-feedback error';
+      return;
+    }
+    const summary = buildResultSummary(best,p,mods);
+    saveRegistration(email,{best,plan:p,mods,summary});
+    feedback.textContent = '登録しました。メール送信画面を開きます。';
+    feedback.className = 'email-feedback success';
+    const subject = encodeURIComponent('ダイエットプラン診断結果');
+    const body = encodeURIComponent(summary);
+    window.location.href = 'mailto:'+encodeURIComponent(email)+'?subject='+subject+'&body='+body;
+  });
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
