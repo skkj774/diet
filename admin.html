@@ -79,12 +79,14 @@ footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
 </main>
 <footer class="wrap"><p class="small">Supabase から直接データを取得します。公開キーを利用するため、権限は Supabase 側で制限してください。</p></footer>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const DIET_SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
 const DIET_SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
 const DIET_SUPABASE_TABLE = 'registrations';
-const DIET_SUPABASE_CLIENT = supabaseJs.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY);
+const DIET_SUPABASE_CLIENT = window.supabase
+  ? window.supabase.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY)
+  : null;
 const ADMIN_PASSWORD = 'diet-admin-pass';
 const loginSection = document.getElementById('loginSection');
 const dataSection = document.getElementById('dataSection');
@@ -101,6 +103,11 @@ async function loadRegistrations(){
   dataFeedback.textContent = '登録データを読み込んでいます...';
   dataFeedback.className = 'feedback';
   dataTableBody.innerHTML = '';
+  if(!DIET_SUPABASE_CLIENT){
+    dataFeedback.textContent = '読み込みエラー: Supabase ライブラリを読み込めませんでした。ページを再読み込みしてください。';
+    dataFeedback.className = 'feedback error';
+    return;
+  }
   const { data, error } = await DIET_SUPABASE_CLIENT
     .from(DIET_SUPABASE_TABLE)
     .select('email,plan,summary,tags,registered_at')
@@ -149,6 +156,9 @@ loginButton.addEventListener('click',()=>{
   loginFeedback.textContent = 'ログインしました。';
   loginFeedback.className = 'feedback success';
   showAdmin();
+});
+adminPassword.addEventListener('keydown',event=>{
+  if(event.key === 'Enter') loginButton.click();
 });
 reloadButton.addEventListener('click',loadRegistrations);
 </script>
