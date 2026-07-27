@@ -70,7 +70,7 @@ footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
     <div class="table-wrap">
       <table id="dataTable">
         <thead>
-          <tr><th>登録日時</th><th>メールアドレス</th><th>プラン</th><th>タグ</th></tr>
+          <tr><th>登録日時</th><th>メールアドレス</th><th>体重</th><th>プラン</th><th>タグ</th></tr>
         </thead>
         <tbody></tbody>
       </table>
@@ -87,7 +87,6 @@ const DIET_SUPABASE_TABLE = 'registrations';
 const DIET_SUPABASE_CLIENT = window.supabase
   ? window.supabase.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY)
   : null;
-const ADMIN_PASSWORD = 'diet-admin-pass';
 const loginSection = document.getElementById('loginSection');
 const dataSection = document.getElementById('dataSection');
 const loginFeedback = document.getElementById('loginFeedback');
@@ -96,10 +95,11 @@ const dataTableBody = document.querySelector('#dataTable tbody');
 const adminPassword = document.getElementById('adminPassword');
 const loginButton = document.getElementById('loginButton');
 const reloadButton = document.getElementById('reloadButton');
+let adminSessionPassword = '';
 
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-async function loadRegistrations(){
+async function loadRegistrations(password = adminSessionPassword){
   dataFeedback.textContent = '登録データを読み込んでいます...';
   dataFeedback.className = 'feedback';
   dataTableBody.innerHTML = '';
@@ -108,20 +108,22 @@ async function loadRegistrations(){
     dataFeedback.className = 'feedback error';
     return;
   }
-  const { data, error } = await DIET_SUPABASE_CLIENT
-    .from(DIET_SUPABASE_TABLE)
-    .select('email,plan,summary,tags,registered_at')
-    .order('registered_at', { ascending: false })
-    .limit(100);
+  const { data, error } = await DIET_SUPABASE_CLIENT.rpc('get_diet_registrations', {
+    admin_password: password
+  });
   if(error){
-    dataFeedback.textContent = '読み込みエラー: ' + (error.message || error);
+    const invalidPassword = String(error.message || error).includes('Invalid admin password');
+    dataFeedback.textContent = invalidPassword
+      ? 'パスワードが違います。'
+      : '読み込みエラー: ' + (error.message || error);
     dataFeedback.className = 'feedback error';
-    return;
+    return false;
   }
+  adminSessionPassword = password;
   if(!data || !data.length){
     dataFeedback.textContent = '登録データはまだありません。';
     dataFeedback.className = 'feedback';
-    return;
+    return true;
   }
   dataFeedback.textContent = '最新 ' + data.length + ' 件を表示しています。';
   dataFeedback.className = 'feedback success';
@@ -129,27 +131,33 @@ async function loadRegistrations(){
     const tr = document.createElement('tr');
     tr.innerHTML = '<td>'+esc(row.registered_at)+'</td>'
       + '<td>'+esc(row.email)+'</td>'
+      + '<td>'+(row.weight == null ? '' : esc(row.weight)+' kg')+'</td>'
       + '<td>'+esc(row.plan)+'</td>'
       + '<td>'+esc(row.tags)+'</td>';
     dataTableBody.appendChild(tr);
   });
+  return true;
 }
 
 function showAdmin(){
   loginSection.classList.add('hidden');
   dataSection.classList.remove('hidden');
-  loadRegistrations();
 }
 
-loginButton.addEventListener('click',()=>{
+loginButton.addEventListener('click',async ()=>{
   const value = adminPassword.value.trim();
   if(!value){
     loginFeedback.textContent = 'パスワードを入力してください。';
     loginFeedback.className = 'feedback error';
     return;
   }
-  if(value !== ADMIN_PASSWORD){
-    loginFeedback.textContent = 'パスワードが違います。';
+  loginButton.disabled = true;
+  loginFeedback.textContent = '確認しています...';
+  loginFeedback.className = 'feedback';
+  const loaded = await loadRegistrations(value);
+  loginButton.disabled = false;
+  if(!loaded){
+    loginFeedback.textContent = dataFeedback.textContent;
     loginFeedback.className = 'feedback error';
     return;
   }

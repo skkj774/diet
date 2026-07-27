@@ -128,7 +128,31 @@ footer{padding:20px 0 8px;color:var(--ink2);font-size:11.5px;text-align:center;}
   <div id="app"></div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const DIET_SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
+const DIET_SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
+const DIET_SUPABASE_TABLE = 'registrations';
+const DIET_SUPABASE_CLIENT = window.supabase
+  ? window.supabase.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY)
+  : null;
+async function insertDietRegistrationToSupabase(email, p, mods, summary, weight){
+  if(!DIET_SUPABASE_CLIENT){
+    throw new Error('Supabase ライブラリを読み込めませんでした。ページを再読み込みしてください。');
+  }
+  const payload = {
+    email,
+    weight,
+    plan: p.name,
+    summary,
+    tags: mods.join(','),
+    registered_at: new Date().toISOString()
+  };
+  const { data, error } = await DIET_SUPABASE_CLIENT.from(DIET_SUPABASE_TABLE).insert([payload]);
+  if(error) throw error;
+  return data;
+}
+
 /* ============ EVIDENCE ============ */
 const EV = {
   lookahead:{t:"Look AHEAD試験",n:"5,145名・1年",f:"食事+運動+行動支援で体重が約8.6%減（対照は0.7%減）。長期の心血管イベント抑制は示せず試験中止。",mixed:1,
@@ -270,8 +294,9 @@ function loadRegistration(){
 function saveRegistration(email,data){
   localStorage.setItem(STORAGE_KEY,JSON.stringify({email,registeredAt:new Date().toISOString(),data}));
 }
-function buildResultSummary(best,p,mods){
+function buildResultSummary(best,p,mods,weight){
   let body = 'ダイエットプラン診断の結果\n';
+  body += '現在の体重: '+(weight||'未入力')+' kg\n';
   body += 'プラン: '+p.name+'\n'+p.tag+'\n\n';
   body += '【食事】\n';
   p.diet.forEach(a=>{ body += '・'+a.do+'\n'; });
@@ -369,11 +394,12 @@ function renderResult(){
 
   const registration = loadRegistration();
   const registeredEmail = registration ? registration.email : '';
-  h += '<section class="block email-block"><h3>結果をメールで受け取る</h3>';
+  h += '<section class="block email-block"><h3>登録して診断データを送信</h3>';
   h += '<form id="emailForm" class="email-form">';
-  h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail) : '')+'</p>';
+  h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail)+(registration.weight?(' / 体重 '+esc(registration.weight)+'kg'):'') : '')+'</p>';
+  h += '<input class="email-field" id="weightInput" name="weight" type="number" step="0.1" min="0" placeholder="現在の体重（kg）を入力" value="'+esc(registration && registration.weight ? registration.weight : '')+'" required>';
   h += '<input class="email-field" id="emailInput" name="email" type="email" placeholder="メールアドレスを入力" value="'+esc(registeredEmail)+'" required>'; 
-  h += '<p class="email-note">登録すると診断結果をメール送信します。メールクライアントが起動しない場合はアドレスをコピーして手動で送信してください。</p>';
+  h += '<p class="email-note">登録すると診断データを送信します。メールクライアントは起動しません。</p>';
   h += '<div class="email-actions"><button class="btn" type="submit" id="registerEmail">送信する</button></div>';
   h += '</form></section>';
 
@@ -385,22 +411,35 @@ function renderResult(){
     step = 0; answers.length = 0; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'});
   });
   document.getElementById('printBtn').addEventListener('click',()=>window.print());
-  document.getElementById('emailForm').addEventListener('submit',event=>{
+  document.getElementById('emailForm').addEventListener('submit',async event=>{
     event.preventDefault();
     const email = document.getElementById('emailInput').value.trim();
+    const weightValue = document.getElementById('weightInput').value.trim();
+    const weight = parseFloat(weightValue);
     const feedback = document.getElementById('emailFeedback');
     if(!emailIsValid(email)){
       feedback.textContent = '有効なメールアドレスを入力してください。';
       feedback.className = 'email-feedback error';
       return;
     }
-    const summary = buildResultSummary(best,p,mods);
-    saveRegistration(email,{best,plan:p,mods,summary});
-    feedback.textContent = '登録しました。メール送信画面を開きます。';
+    if(Number.isNaN(weight) || weight <= 0){
+      feedback.textContent = '現在の体重を正しく入力してください。';
+      feedback.className = 'email-feedback error';
+      return;
+    }
+    const summary = buildResultSummary(best,p,mods,weight);
+    feedback.textContent = 'Supabase に登録中です...';
+    feedback.className = 'email-feedback';
+    try{
+      await insertDietRegistrationToSupabase(email,p,mods,summary,weight);
+    }catch(err){
+      feedback.textContent = 'Supabase 登録に失敗しました: '+(err.message||err);
+      feedback.className = 'email-feedback error';
+      return;
+    }
+    saveRegistration(email,{best,plan:p,mods,summary,weight});
+    feedback.textContent = '登録と送信が完了しました。';
     feedback.className = 'email-feedback success';
-    const subject = encodeURIComponent('ダイエットプラン診断結果');
-    const body = encodeURIComponent(summary);
-    window.location.href = 'mailto:'+encodeURIComponent(email)+'?subject='+subject+'&body='+body;
   });
 }
 
