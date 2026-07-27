@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>管理画面 - 登録メール一覧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#eef3f6;
+  --card:#fff;
+  --ink:#1b2330;
+  --ink2:#5f6d7a;
+  --indigo:#0d6efd;
+  --line:#dce4ea;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.7;}
+.wrap{max-width:940px;margin:0 auto;padding:20px 16px 40px;}
+header{background:var(--indigo);color:#fff;padding:22px 16px;border-radius:14px;}
+header h1{font-family:"Zen Kaku Gothic New",sans-serif;font-size:22px;margin:0;line-height:1.2;}
+header p{margin:10px 0 0;font-size:14px;color:rgba(255,255,255,.88);}
+section.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px;}
+label{display:block;font-weight:700;margin-bottom:8px;}
+input[type=password]{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;}
+button{font:inherit;font-size:15px;font-weight:700;padding:14px 16px;border-radius:12px;border:none;cursor:pointer;background:var(--indigo);color:#fff;}
+button:disabled{opacity:.6;cursor:default;}
+.note{font-size:14px;color:var(--ink2);margin-top:10px;}
+.feedback{margin-top:12px;font-size:14px;}
+.feedback.error{color:#b22222;}
+.feedback.success{color:#1d7a2e;}
+.table-wrap{overflow-x:auto;margin-top:18px;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:12px 10px;border:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px;}
+th{background:#f8f9fb;font-weight:700;}
+.small{font-size:13px;color:var(--ink2);}
+.topbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px;}
+.topbar button{flex:0 0 auto;}
+.hidden{display:none;}
+footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>管理画面</h1>
+    <p>登録されたメールアドレスを一覧で確認できます。</p>
+  </div>
+</header>
+<main class="wrap">
+  <section class="card" id="loginSection">
+    <label for="adminPassword">管理用パスワード</label>
+    <input id="adminPassword" type="password" placeholder="パスワードを入力してください" autocomplete="off" />
+    <div class="topbar">
+      <button id="loginButton">ログイン</button>
+      <span class="note">このページは簡易的な管理画面です。パスワードは第三者に知られないよう管理してください。</span>
+    </div>
+    <p class="feedback" id="loginFeedback"></p>
+  </section>
+
+  <section class="card hidden" id="dataSection">
+    <div class="topbar">
+      <h2 style="margin:0;font-size:18px;">登録一覧</h2>
+      <button id="reloadButton">再読込</button>
+    </div>
+    <p class="note" id="dataNote">最新100件を表示します。</p>
+    <div class="feedback" id="dataFeedback"></div>
+    <div class="table-wrap">
+      <table id="dataTable">
+        <thead>
+          <tr><th>登録日時</th><th>メールアドレス</th><th>プラン</th><th>タグ</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<footer class="wrap"><p class="small">Supabase から直接データを取得します。公開キーを利用するため、権限は Supabase 側で制限してください。</p></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script>
+const DIET_SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
+const DIET_SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
+const DIET_SUPABASE_TABLE = 'registrations';
+const DIET_SUPABASE_CLIENT = supabaseJs.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY);
+const ADMIN_PASSWORD = 'diet-admin-pass';
+const loginSection = document.getElementById('loginSection');
+const dataSection = document.getElementById('dataSection');
+const loginFeedback = document.getElementById('loginFeedback');
+const dataFeedback = document.getElementById('dataFeedback');
+const dataTableBody = document.querySelector('#dataTable tbody');
+const adminPassword = document.getElementById('adminPassword');
+const loginButton = document.getElementById('loginButton');
+const reloadButton = document.getElementById('reloadButton');
+
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function loadRegistrations(){
+  dataFeedback.textContent = '登録データを読み込んでいます...';
+  dataFeedback.className = 'feedback';
+  dataTableBody.innerHTML = '';
+  const { data, error } = await DIET_SUPABASE_CLIENT
+    .from(DIET_SUPABASE_TABLE)
+    .select('email,plan,summary,tags,registered_at')
+    .order('registered_at', { ascending: false })
+    .limit(100);
+  if(error){
+    dataFeedback.textContent = '読み込みエラー: ' + (error.message || error);
+    dataFeedback.className = 'feedback error';
+    return;
+  }
+  if(!data || !data.length){
+    dataFeedback.textContent = '登録データはまだありません。';
+    dataFeedback.className = 'feedback';
+    return;
+  }
+  dataFeedback.textContent = '最新 ' + data.length + ' 件を表示しています。';
+  dataFeedback.className = 'feedback success';
+  data.forEach(row=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td>'+esc(row.registered_at)+'</td>'
+      + '<td>'+esc(row.email)+'</td>'
+      + '<td>'+esc(row.plan)+'</td>'
+      + '<td>'+esc(row.tags)+'</td>';
+    dataTableBody.appendChild(tr);
+  });
+}
+
+function showAdmin(){
+  loginSection.classList.add('hidden');
+  dataSection.classList.remove('hidden');
+  loadRegistrations();
+}
+
+loginButton.addEventListener('click',()=>{
+  const value = adminPassword.value.trim();
+  if(!value){
+    loginFeedback.textContent = 'パスワードを入力してください。';
+    loginFeedback.className = 'feedback error';
+    return;
+  }
+  if(value !== ADMIN_PASSWORD){
+    loginFeedback.textContent = 'パスワードが違います。';
+    loginFeedback.className = 'feedback error';
+    return;
+  }
+  loginFeedback.textContent = 'ログインしました。';
+  loginFeedback.className = 'feedback success';
+  showAdmin();
+});
+reloadButton.addEventListener('click',loadRegistrations);
+</script>
+</body>
+</html>
