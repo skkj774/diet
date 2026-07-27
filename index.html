@@ -407,6 +407,7 @@ function renderResult(){
     const summary = buildResultSummary(best,p,mods,weight);
     feedback.textContent = 'フォームを送信しています...';
     feedback.className = 'email-feedback';
+    let result;
     try{
       const body = new URLSearchParams(new FormData(form));
       body.set('plan',p.name);
@@ -417,7 +418,7 @@ function renderResult(){
         headers:{'Content-Type':'application/x-www-form-urlencoded;charset=UTF-8'},
         body
       });
-      const result = await response.json().catch(()=>({}));
+      result = await response.json().catch(()=>({}));
       if(!response.ok) throw new Error(result.message||'送信に失敗しました。');
     }catch(err){
       feedback.textContent = err.message||'送信に失敗しました。';
@@ -425,8 +426,8 @@ function renderResult(){
       return;
     }
     saveRegistration(email,{best,plan:p,mods,summary,weight});
-    feedback.textContent = '登録と送信が完了しました。';
-    feedback.className = 'email-feedback success';
+    feedback.textContent = result.message||'登録と送信が完了しました。';
+    feedback.className = result.emailSent === false ? 'email-feedback error' : 'email-feedback success';
   });
 }
 
