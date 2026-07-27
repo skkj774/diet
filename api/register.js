@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
 const REGISTRATIONS_ENDPOINT = `${SUPABASE_URL}/rest/v1/registrations`;
@@ -9,7 +11,7 @@ function text(value, maxLength) {
   return String(value ?? '').trim().slice(0, maxLength);
 }
 
-async function sendRegistrationEmail(email) {
+async function sendRegistrationEmail(email, progressUrl) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.REGISTRATION_FROM_EMAIL;
   if (!apiKey || !from) {
@@ -26,8 +28,8 @@ async function sendRegistrationEmail(email) {
       from,
       to: [email],
       subject: REGISTRATION_SUBJECT,
-      text: `ありがとうございます。\n\nTAZパーソナルダイエットプログラム\n${PROGRAM_URL}`,
-      html: `<p>ありがとうございます。</p><p><a href="${PROGRAM_URL}">TAZパーソナルダイエットプログラム</a></p>`
+      text: `ありがとうございます。\n\n以下の専用ページから、体重の記録と変化の確認ができます。\n${progressUrl}\n\n診断ページ\n${PROGRAM_URL}`,
+      html: `<p>ありがとうございます。</p><p>以下の専用ページから、体重の記録と変化の確認ができます。</p><p><a href="${progressUrl}" style="display:inline-block;padding:12px 20px;border-radius:10px;background:#3557d4;color:#ffffff;text-decoration:none;font-weight:700">体重記録ページを開く</a></p><p style="font-size:13px;color:#5f6675">このリンクはご本人専用です。第三者へ共有しないでください。</p><p><a href="${PROGRAM_URL}">診断ページへ戻る</a></p>`
     })
   });
 
@@ -61,6 +63,9 @@ module.exports = async function handler(request, response) {
   }
 
   try {
+    const accessToken = crypto.randomBytes(32).toString('base64url');
+    const accessTokenHash = crypto.createHash('sha256').update(accessToken, 'utf8').digest('hex');
+    const progressUrl = `${PROGRAM_URL}progress.html#token=${accessToken}`;
     const supabaseResponse = await fetch(REGISTRATIONS_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -69,7 +74,14 @@ module.exports = async function handler(request, response) {
         'Content-Type': 'application/json',
         Prefer: 'return=minimal'
       },
-      body: JSON.stringify({ email, weight, plan, summary, tags })
+      body: JSON.stringify({
+        email,
+        weight,
+        plan,
+        summary,
+        tags,
+        access_token_hash: accessTokenHash
+      })
     });
 
     if (!supabaseResponse.ok) {
@@ -78,7 +90,7 @@ module.exports = async function handler(request, response) {
     }
 
     try {
-      await sendRegistrationEmail(email);
+      await sendRegistrationEmail(email, progressUrl);
     } catch (emailError) {
       console.error('Registration email failed:', emailError);
       return response.status(201).json({
