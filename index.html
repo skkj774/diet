@@ -270,9 +270,10 @@ function loadRegistration(){
 function saveRegistration(email,data){
   localStorage.setItem(STORAGE_KEY,JSON.stringify({email,registeredAt:new Date().toISOString(),data}));
 }
-function buildResultSummary(best,p,mods,weight){
+function buildResultSummary(best,p,mods,weight,targetWeight){
   let body = 'ダイエットプラン診断の結果\n';
   body += '現在の体重: '+(weight||'未入力')+' kg\n';
+  body += '目標体重: '+(targetWeight||'未入力')+' kg\n';
   body += 'プラン: '+p.name+'\n'+p.tag+'\n\n';
   body += '【食事】\n';
   p.diet.forEach(a=>{ body += '・'+a.do+'\n'; });
@@ -370,12 +371,14 @@ function renderResult(){
 
   const registration = loadRegistration();
   const registeredEmail = registration ? registration.email : '';
-  h += '<section class="block email-block"><h3>登録して診断データを送信</h3>';
+  const registeredData = registration && registration.data ? registration.data : {};
+  h += '<section class="block email-block"><h3>目標体重を登録してプログラムへ参加</h3>';
   h += '<form id="emailForm" class="email-form" method="post" action="/api/register">';
-  h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail)+(registration.weight?(' / 体重 '+esc(registration.weight)+'kg'):'') : '')+'</p>';
-  h += '<input class="email-field" id="weightInput" name="weight" type="number" step="0.1" min="0" placeholder="現在の体重（kg）を入力" value="'+esc(registration && registration.weight ? registration.weight : '')+'" required>';
+  h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail)+(registeredData.weight?(' / 現在 '+esc(registeredData.weight)+'kg'):'')+(registeredData.targetWeight?(' / 目標 '+esc(registeredData.targetWeight)+'kg'):'') : '')+'</p>';
+  h += '<input class="email-field" id="weightInput" name="weight" type="number" step="0.1" min="0.1" max="999.9" placeholder="現在の体重（kg）を入力" value="'+esc(registeredData.weight||'')+'" required>';
+  h += '<input class="email-field" id="targetWeightInput" name="target_weight" type="number" step="0.1" min="0.1" max="999.9" placeholder="目標体重（kg）を入力" value="'+esc(registeredData.targetWeight||'')+'" required>';
   h += '<input class="email-field" id="emailInput" name="email" type="email" placeholder="メールアドレスを入力" value="'+esc(registeredEmail)+'" required>';
-  h += '<p class="email-note">フォームから診断データを送信します。メールアプリは起動しません。</p>';
+  h += '<p class="email-note">仮登録メール内のリンクを押すとプログラムが開始します。開始後もいつでも解約できます。</p>';
   h += '<div class="email-actions"><button class="btn" type="submit" id="registerEmail">送信する</button></div>';
   h += '</form></section>';
 
@@ -392,7 +395,9 @@ function renderResult(){
     const form = event.currentTarget;
     const email = document.getElementById('emailInput').value.trim();
     const weightValue = document.getElementById('weightInput').value.trim();
+    const targetWeightValue = document.getElementById('targetWeightInput').value.trim();
     const weight = parseFloat(weightValue);
+    const targetWeight = parseFloat(targetWeightValue);
     const feedback = document.getElementById('emailFeedback');
     if(!emailIsValid(email)){
       feedback.textContent = '有効なメールアドレスを入力してください。';
@@ -404,7 +409,12 @@ function renderResult(){
       feedback.className = 'email-feedback error';
       return;
     }
-    const summary = buildResultSummary(best,p,mods,weight);
+    if(Number.isNaN(targetWeight) || targetWeight <= 0 || targetWeight >= weight){
+      feedback.textContent = '目標体重は現在の体重より小さい値で入力してください。';
+      feedback.className = 'email-feedback error';
+      return;
+    }
+    const summary = buildResultSummary(best,p,mods,weight,targetWeight);
     feedback.textContent = 'フォームを送信しています...';
     feedback.className = 'email-feedback';
     let result;
@@ -425,7 +435,7 @@ function renderResult(){
       feedback.className = 'email-feedback error';
       return;
     }
-    saveRegistration(email,{best,plan:p,mods,summary,weight});
+    saveRegistration(email,{best,plan:p,mods,summary,weight,targetWeight});
     feedback.textContent = result.message||'登録と送信が完了しました。';
     feedback.className = result.emailSent === false ? 'email-feedback error' : 'email-feedback success';
   });

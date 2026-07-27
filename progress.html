@@ -14,7 +14,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,Bl
 h1{font-size:27px;line-height:1.35;margin:0 0 8px}
 .lead{color:var(--muted);line-height:1.7;margin:0 0 22px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px;box-shadow:0 8px 26px rgba(40,54,96,.06)}
-.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .metric{background:#f7f8fc;border-radius:13px;padding:14px 10px;text-align:center}
 .metric span{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
 .metric strong{font-size:21px}
@@ -25,6 +25,12 @@ input{min-width:0;flex:1;border:1.5px solid var(--line);border-radius:12px;paddi
 input:focus{outline:3px solid rgba(53,87,212,.14);border-color:var(--primary)}
 button{border:0;border-radius:12px;padding:13px 18px;background:var(--primary);color:#fff;font:inherit;font-weight:800;cursor:pointer}
 button:disabled{opacity:.55;cursor:wait}
+.button-secondary{background:#eef1fb;color:var(--primary)}
+.button-danger{background:#fff0f0;color:var(--danger)}
+.notice{border-left:4px solid var(--primary);background:#f0f3ff;padding:14px 16px;border-radius:10px;line-height:1.7;margin-bottom:16px}
+.notice.good{border-color:var(--good);background:#eefaf5}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.actions button{flex:1}
 .feedback{min-height:1.5em;margin:10px 0 0;font-size:13px;color:var(--muted)}
 .feedback.error{color:var(--danger)}
 .feedback.success{color:var(--good)}
@@ -38,7 +44,7 @@ td:last-child,th:last-child{text-align:right}
 .loading,.fatal{padding:40px 20px;text-align:center;color:var(--muted)}
 .fatal{color:var(--danger)}
 .back{display:inline-block;color:var(--primary);font-weight:700;text-decoration:none;margin-top:8px}
-@media(max-width:520px){.wrap{width:min(100% - 22px,720px);padding-top:20px}.card{padding:17px}.summary{gap:6px}.metric{padding:12px 5px}.metric strong{font-size:17px}form{flex-direction:column}button{width:100%}}
+@media(max-width:520px){.wrap{width:min(100% - 22px,720px);padding-top:20px}.card{padding:17px}.summary{grid-template-columns:repeat(2,1fr);gap:6px}.metric{padding:12px 5px}.metric strong{font-size:17px}form{flex-direction:column}button{width:100%}}
 </style>
 </head>
 <body>
@@ -54,10 +60,14 @@ td:last-child,th:last-child{text-align:right}
   const app=document.getElementById('app');
   const params=new URLSearchParams(location.hash.slice(1));
   const token=params.get('token')||'';
+  const shouldStart=params.get('start')==='1';
+  const checkin=params.get('checkin')||'';
   const esc=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
   const kg=value=>Number(value).toFixed(1)+' kg';
   const date=value=>new Intl.DateTimeFormat('ja-JP',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(value));
   let entries=[];
+  let profile=null;
+  let startMessage='';
 
   async function api(body){
     const response=await fetch('/api/progress',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,token})});
@@ -86,8 +96,13 @@ td:last-child,th:last-child{text-align:right}
   function render(){
     const first=Number(entries[0].weight);
     const latest=Number(entries[entries.length-1].weight);
+    const target=Number(profile.target_weight);
     const change=latest-first;
     const changeText=(change>0?'+':'')+change.toFixed(1)+' kg';
+    const checkinLabels={week1:'開始後の継続確認',month1:'1か月目',month2:'2か月目',month3:'3か月目'};
+    const checkinLabel=checkinLabels[checkin]||(checkin.startsWith('continue_')?'継続チェック':'');
+    const isEnded=profile.program_status==='ended';
+    const canContinue=profile.latest_checkin==='month3'||checkin==='month3';
     const rows=[...entries].reverse().map((item,index)=>{
       const previousIndex=entries.length-2-index;
       const delta=previousIndex>=0?Number(item.weight)-Number(entries[previousIndex].weight):null;
@@ -95,14 +110,26 @@ td:last-child,th:last-child{text-align:right}
       return '<tr><td>'+esc(date(item.recorded_at))+'</td><td>'+esc(deltaText)+'</td><td><strong>'+esc(kg(item.weight))+'</strong></td></tr>';
     }).join('');
     app.innerHTML=
+      (startMessage?'<div class="notice good">'+esc(startMessage)+'</div>':'')+
+      (checkinLabel?'<div class="notice"><strong>'+esc(checkinLabel)+'の入力です。</strong><br>現在の体重を入力して、これまでの変化を確認しましょう。</div>':'')+
       '<section class="card summary">'+
         '<div class="metric"><span>開始時</span><strong>'+esc(kg(first))+'</strong></div>'+
+        '<div class="metric"><span>目標</span><strong>'+esc(kg(target))+'</strong></div>'+
         '<div class="metric"><span>最新</span><strong>'+esc(kg(latest))+'</strong></div>'+
         '<div class="metric '+(change<=0?'good':'')+'"><span>開始時から</span><strong>'+esc(changeText)+'</strong></div>'+
       '</section>'+
-      '<section class="card"><h2>今日の体重を追加</h2><form id="weightForm"><input id="weight" type="number" inputmode="decimal" step="0.1" min="0.1" max="999.9" placeholder="例：65.4" aria-label="体重（kg）" required><button id="submit" type="submit">記録する</button></form><p id="feedback" class="feedback">単位：kg</p></section>'+
-      '<section class="card"><h2>体重の変化</h2><div class="chart">'+chartMarkup(entries)+'</div><table><thead><tr><th>記録日時</th><th>前回比</th><th>体重</th></tr></thead><tbody>'+rows+'</tbody></table></section>';
-    document.getElementById('weightForm').addEventListener('submit',addWeight);
+      (isEnded
+        ? '<section class="card"><div class="notice">このプログラムは終了しています。予約メールも停止されています。</div></section>'
+        : '<section class="card"><h2>'+(checkinLabel?esc(checkinLabel)+'の体重を入力':'今日の体重を追加')+'</h2><form id="weightForm"><input id="weight" type="number" inputmode="decimal" step="0.1" min="0.1" max="999.9" placeholder="例：65.4" aria-label="体重（kg）" required><button id="submit" type="submit">記録する</button></form><p id="feedback" class="feedback">単位：kg</p></section>')+
+      '<section class="card"><h2>体重の変化</h2><div class="chart">'+chartMarkup(entries)+'</div><table><thead><tr><th>記録日時</th><th>前回比</th><th>体重</th></tr></thead><tbody>'+rows+'</tbody></table></section>'+
+      (!isEnded&&canContinue?'<section class="card" id="continuation"><h2>3か月後の継続</h2><p class="lead">継続する場合のみ登録してください。目標達成済みの場合は体重メンテナンス、未達成の場合は減量プログラムを継続します。</p><div class="actions"><button id="continueProgram" type="button">プログラムを継続する</button></div><p id="continueFeedback" class="feedback"></p></section>':'')+
+      (!isEnded?'<section class="card"><h2>プログラムの終了</h2><p class="lead">いつでも終了できます。終了すると、まだ送られていない予約メールを停止します。</p><button id="stopProgram" class="button-danger" type="button">プログラムを解約する</button><p id="stopFeedback" class="feedback"></p></section>':'');
+    const form=document.getElementById('weightForm');
+    if(form)form.addEventListener('submit',addWeight);
+    const continueButton=document.getElementById('continueProgram');
+    if(continueButton)continueButton.addEventListener('click',continueProgram);
+    const stopButton=document.getElementById('stopProgram');
+    if(stopButton)stopButton.addEventListener('click',stopProgram);
   }
 
   async function addWeight(event){
@@ -115,12 +142,52 @@ td:last-child,th:last-child{text-align:right}
     feedback.className='feedback';
     feedback.textContent='保存しています…';
     try{
-      const result=await api({action:'add',weight});
+      const result=await api({action:'add',weight,checkin});
       entries.push(result.entry);
+      profile.current_weight=result.entry.weight;
+      if(checkin)profile.latest_checkin=checkin;
       render();
       const nextFeedback=document.getElementById('feedback');
-      nextFeedback.className='feedback success';
-      nextFeedback.textContent='体重を記録しました。';
+      if(nextFeedback){
+        nextFeedback.className='feedback success';
+        nextFeedback.textContent=result.emailSent?'体重を記録しました。到達度に応じたコメントをメールで送りました。':'体重を記録しました。';
+      }
+    }catch(error){
+      feedback.className='feedback error';
+      feedback.textContent=error.message;
+      button.disabled=false;
+    }
+  }
+
+  async function continueProgram(){
+    const button=document.getElementById('continueProgram');
+    const feedback=document.getElementById('continueFeedback');
+    button.disabled=true;
+    feedback.textContent='登録しています…';
+    try{
+      const result=await api({action:'continue'});
+      profile.program_status='continuing';
+      feedback.className='feedback success';
+      feedback.textContent=result.message;
+      button.remove();
+    }catch(error){
+      feedback.className='feedback error';
+      feedback.textContent=error.message;
+      button.disabled=false;
+    }
+  }
+
+  async function stopProgram(){
+    if(!confirm('プログラムを終了し、今後の予約メールを停止しますか？'))return;
+    const button=document.getElementById('stopProgram');
+    const feedback=document.getElementById('stopFeedback');
+    button.disabled=true;
+    feedback.textContent='停止しています…';
+    try{
+      const result=await api({action:'stop'});
+      profile.program_status='ended';
+      startMessage=result.message;
+      render();
     }catch(error){
       feedback.className='feedback error';
       feedback.textContent=error.message;
@@ -134,8 +201,13 @@ td:last-child,th:last-child{text-align:right}
       return;
     }
     try{
+      if(shouldStart){
+        const started=await api({action:'start'});
+        startMessage=started.message;
+      }
       const result=await api({action:'list'});
       entries=result.entries;
+      profile=result.profile;
       render();
     }catch(error){
       app.innerHTML='<div class="card fatal">'+esc(error.message)+'</div>';
