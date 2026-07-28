@@ -68,8 +68,16 @@ section.block h3{font-size:15px;margin:0 0 12px;color:var(--ink);}
 
 .action{padding:12px 0;border-top:1px solid var(--line);}
 .action:first-child{border-top:none;padding-top:0;}
-.action .do{font-size:15px;font-weight:500;margin:0 0 6px;}
+.simple-label{display:inline-block;font-size:11px;line-height:1;color:var(--indigo-d);font-weight:700;background:var(--ev-bg);border-radius:100px;padding:5px 9px;margin-bottom:7px;}
+.action .do{font-size:16px;font-weight:700;line-height:1.7;margin:0;padding:12px 14px;background:#f1fbf4;border-left:4px solid var(--indigo);border-radius:8px;}
 .action .why{font-size:13.5px;color:var(--ink2);margin:0 0 8px;}
+.expert{margin-top:9px;border:1px solid var(--line);border-radius:9px;background:#fafcfb;}
+.expert summary{list-style:none;cursor:pointer;padding:9px 12px;color:var(--ink2);font-size:12.5px;font-weight:700;user-select:none;}
+.expert summary::-webkit-details-marker{display:none;}
+.expert summary::after{content:"＋";float:right;color:var(--indigo);font-size:15px;line-height:1.2;}
+.expert[open] summary::after{content:"−";}
+.expert-body{padding:2px 12px 12px;border-top:1px solid var(--line);}
+.expert-body .why{margin-top:10px;}
 
 .evlink{
   display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
@@ -80,9 +88,9 @@ section.block h3{font-size:15px;margin:0 0 12px;color:var(--ink);}
 .evlink::after{content:"→";font-weight:700;}
 .evmeta{display:block;font-size:11.5px;color:var(--ink2);margin-top:5px;}
 
-.addon{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;background:#fafbfc;}
+.addon{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px;background:#f1fbf4;}
 .addon h4{font-size:14px;margin:0 0 5px;}
-.addon p{font-size:13.5px;color:var(--ink2);margin:0 0 8px;}
+.addon p{font-size:14px;color:var(--ink);font-weight:600;margin:0;}
 
 .limits{background:#fbf6ea;border:1px solid #ecdcc0;border-radius:14px;padding:16px 18px;margin-top:12px;}
 .limits h3{font-size:15px;margin:0 0 10px;color:#5c4c22;}
@@ -321,6 +329,12 @@ function evLink(key){
        + '<span class="evmeta">'+esc(e.t)+' ・ '+esc(e.n)+' ・ '+esc(e.f)+'</span>';
 }
 
+function expertDetails(why,key,label){
+  return '<details class="expert"><summary>'+(label||'理由・研究結果を見る')+'</summary><div class="expert-body">'
+    + (why?'<p class="why">'+esc(why)+'</p>':'')
+    + evLink(key)+'</div></details>';
+}
+
 function renderResult(){
   renderProgress();
   const scores = {A:0,B:0,C:0,D:0,E:0};
@@ -340,13 +354,13 @@ function renderResult(){
 
   h += '<section class="block"><h3>食事</h3>';
   p.diet.forEach(a=>{
-    h += '<div class="action"><p class="do">'+esc(a.do)+'</p><p class="why">'+esc(a.why)+'</p>'+evLink(a.ev)+'</div>';
+    h += '<div class="action"><span class="simple-label">やること</span><p class="do">'+esc(a.do)+'</p>'+expertDetails(a.why,a.ev)+'</div>';
   });
   h += '</section>';
 
   h += '<section class="block"><h3>運動</h3>';
   p.ex.forEach(a=>{
-    h += '<div class="action"><p class="do">'+esc(a.do)+'</p><p class="why">'+esc(a.why)+'</p>'+evLink(a.ev)+'</div>';
+    h += '<div class="action"><span class="simple-label">やること</span><p class="do">'+esc(a.do)+'</p>'+expertDetails(a.why,a.ev)+'</div>';
   });
   if(p.caution) h += '<div class="safety">'+esc(p.caution)+'</div>';
   h += '</section>';
@@ -356,12 +370,12 @@ function renderResult(){
     h += '<section class="block"><h3>あなたに追加した項目</h3>';
     mods.forEach(k=>{
       const m = MODULES[k];
-      h += '<div class="addon"><h4>'+esc(m.name)+'</h4><p>'+esc(m.body)+'</p>'+evLink(m.ev)+'</div>';
+      h += '<div class="addon"><h4>'+esc(m.name)+'</h4><p>'+esc(m.body)+'</p>'+expertDetails('',m.ev,'研究結果を見る')+'</div>';
     });
     h += '</section>';
   }
 
-  h += '<div class="limits"><h3>正直な限界</h3><ul>';
+  h += '<div class="limits"><h3>注意点</h3><ul>';
   h += '<li>ここでの減量幅は多くが3〜12か月で2〜8kg程度です。急激な減量を示す試験ではありません。</li>';
   h += '<li>オレンジ色の項目は「有意差なし／一部のみ有意」だった試験です。参考として扱ってください。</li>';
   h += '<li>体質測定（血液・遺伝子など）に基づく診断ではなく、回答内容と臨床試験を照合したものです。</li>';
