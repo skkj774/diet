@@ -93,7 +93,11 @@ section.block h3{font-size:15px;margin:0 0 12px;color:var(--ink);}
 .addon p{font-size:14px;color:var(--ink);font-weight:600;margin:0;}
 
 .limits{background:#fbf6ea;border:1px solid #ecdcc0;border-radius:14px;padding:16px 18px;margin-top:12px;}
-.limits h3{font-size:15px;margin:0 0 10px;color:#5c4c22;}
+.limits summary{list-style:none;cursor:pointer;font-family:"Zen Kaku Gothic New",sans-serif;font-size:15px;font-weight:700;color:#5c4c22;user-select:none;}
+.limits summary::-webkit-details-marker{display:none;}
+.limits summary::after{content:"＋";float:right;font-size:17px;line-height:1.3;}
+.limits[open] summary::after{content:"−";}
+.limits-body{padding-top:12px;}
 .limits ul{margin:0;padding-left:1.1em;}
 .limits li{font-size:13px;color:#5f5334;margin-bottom:9px;line-height:1.65;}
 
@@ -126,7 +130,7 @@ footer{padding:20px 0 8px;color:var(--ink2);font-size:11.5px;text-align:center;}
 
 <header>
   <div class="wrap">
-    <p>ヒト臨床試験（RCT中心）に基づく</p>
+    <p>最先端サイエンスに基づく</p>
     <h1 class="title">5問でダイエットプラン診断</h1>
   </div>
 </header>
@@ -375,18 +379,18 @@ function renderResult(){
     h += '</section>';
   }
 
-  h += '<div class="limits"><h3>注意点</h3><ul>';
+  h += '<details class="limits"><summary>注意点</summary><div class="limits-body"><ul>';
   h += '<li>ここでの減量幅は多くが3〜12か月で2〜8kg程度です。急激な減量を示す試験ではありません。</li>';
   h += '<li>オレンジ色の項目は「有意差なし／一部のみ有意」だった試験です。参考として扱ってください。</li>';
   h += '<li>体質測定（血液・遺伝子など）に基づく診断ではなく、回答内容と臨床試験を照合したものです。</li>';
-  h += '</ul></div>';
+  h += '</ul></div></details>';
 
   h += '<div class="safety">妊娠中・治療中の病気がある方・未成年の方は、自己判断せず医師にご相談ください。この診断は医学的な診断・治療ではありません。</div>';
 
   const registration = loadRegistration();
   const registeredEmail = registration ? registration.email : '';
   const registeredData = registration && registration.data ? registration.data : {};
-  h += '<section class="block email-block"><h3>目標体重を登録してプログラムへ参加</h3>';
+  h += '<section class="block email-block"><h3>目標体重を登録してプログラムへ参加（無料）</h3>';
   h += '<form id="emailForm" class="email-form" method="post" action="/api/register">';
   h += '<p class="email-feedback" id="emailFeedback">'+(registration ? '登録済み: '+esc(registeredEmail)+(registeredData.weight?(' / 現在 '+esc(registeredData.weight)+'kg'):'')+(registeredData.targetWeight?(' / 目標 '+esc(registeredData.targetWeight)+'kg'):'') : '')+'</p>';
   h += '<input class="email-field" id="weightInput" name="weight" type="number" step="0.1" min="0.1" max="999.9" placeholder="現在の体重（kg）を入力" value="'+esc(registeredData.weight||'')+'" required>';
