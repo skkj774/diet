@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>論文紹介 — 減量・食事・運動・睡眠をめぐる15の臨床研究</title>
+<meta name="description" content="減量・食事・運動・睡眠に関する15本の臨床研究を、専門知識なしで読めるように解説した論文紹介ページ。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Shippori+Mincho+B1:wght@600;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDEFE9;
+  --paper-2:#E5E8DF;
+  --card:#F6F7F3;
+  --ink:#14181A;
+  --ink-2:#4E5854;
+  --ink-3:#79837E;
+  --rule:#C7CDBF;
+  --ai:#26386B;        /* 藍：介入群 */
+  --ai-soft:#8E9AB8;
+  --hai:#A9A392;       /* 灰：対照群 */
+  --karashi:#B5850F;   /* 芥子：数値・見出し記号 */
+  --enji:#9A2A35;      /* 臙脂：注意書き */
+  --maxw:920px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(to right, rgba(38,56,107,.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(38,56,107,.055) 1px, transparent 1px);
+  background-size:28px 28px;
+  color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.9;
+  font-feature-settings:"palt" 1;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-ligatures:none}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.16em;
+  color:var(--karashi);margin:0 0 22px;text-transform:uppercase;
+}
+.eyebrow::before{content:"—— ";color:var(--rule)}
+h1{
+  font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;
+  font-weight:800;font-size:clamp(31px,6.4vw,54px);line-height:1.35;
+  margin:0 0 6px;letter-spacing:.01em;
+}
+h1 em{font-style:normal;color:var(--ai);text-decoration:underline;text-decoration-color:var(--karashi);text-underline-offset:8px;text-decoration-thickness:2px}
+.hero__sub{
+  font-family:"Shippori Mincho B1",serif;font-size:clamp(15px,2.6vw,19px);
+  color:var(--ink-2);margin:0 0 28px;font-weight:600;
+}
+.hero__lede{max-width:44em;color:var(--ink-2);margin:0 0 20px;font-size:15.5px}
+.hero__lede b{color:var(--ink);font-weight:700}
+.hero__note{
+  max-width:44em;font-size:11.5px;line-height:1.85;color:var(--ink-3);
+  border-top:1px solid var(--rule);padding-top:12px;margin:0 0 40px;
+}
+
+/* ---------- legend / signature ---------- */
+.legend{background:var(--card);border:1px solid var(--rule);padding:26px 24px 20px;position:relative}
+.legend__tag{
+  position:absolute;top:-11px;left:20px;background:var(--ai);color:#fff;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.1em;padding:2px 10px;
+}
+.legend__note{font-size:13.5px;color:var(--ink-2);margin:16px 0 0;line-height:1.8}
+.legend__note span{display:inline-block;background:var(--paper-2);padding:0 6px;margin-right:2px}
+
+/* ---------- comparison bar (signature) ---------- */
+.cmp__metric{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.08em;
+  color:var(--ink-3);margin:0 0 12px;padding-bottom:6px;border-bottom:1px dotted var(--rule);
+}
+.cmp__row{display:grid;grid-template-columns:9.5em 1fr 5.6em;align-items:center;gap:12px;margin-bottom:9px}
+.cmp__lab{font-size:13px;color:var(--ink-2);line-height:1.5}
+.cmp__track{display:block;height:15px;background:var(--paper-2);position:relative;overflow:hidden}
+.cmp__fill{
+  display:block;height:100%;width:0;background:var(--ai);
+  transition:width 1s cubic-bezier(.22,.9,.28,1);
+}
+.is-visible .cmp__fill{width:var(--w)}
+.cmp__fill.is-ctrl{background:var(--hai)}
+.cmp__fill.is-tie{background:var(--ai-soft)}
+.cmp__val{font-family:"IBM Plex Mono",monospace;font-size:13.5px;text-align:right;font-weight:600}
+.cmp__diff{
+  margin:12px 0 0;font-size:13px;color:var(--ink-2);
+  border-top:1px solid var(--rule);padding-top:10px;
+}
+.cmp__diff b{font-family:"IBM Plex Mono",monospace;color:var(--enji);font-size:14.5px}
+.cmp__diff.is-null b{color:var(--ink-2)}
+
+/* ---------- guide ---------- */
+.guide{padding:52px 0;border-bottom:1px solid var(--rule)}
+.guide__grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.term{background:var(--card);padding:18px 18px 20px}
+.term dt{font-family:"Shippori Mincho B1",serif;font-weight:600;font-size:16px;margin-bottom:6px}
+.term dd{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.8}
+
+h2.sec{
+  font-family:"Shippori Mincho B1",serif;font-weight:800;
+  font-size:clamp(21px,4vw,29px);line-height:1.5;margin:0 0 4px;
+}
+.sec__eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.14em;color:var(--karashi);margin:0 0 14px}
+.sec__lede{color:var(--ink-2);font-size:14.5px;max-width:42em;margin:0 0 34px}
+.section{padding:60px 0 20px}
+.section+.section{border-top:1px solid var(--rule)}
+
+/* ---------- study card ---------- */
+.study{background:var(--card);border:1px solid var(--rule);margin-bottom:26px}
+.study__head{padding:22px 24px 18px;border-bottom:1px solid var(--rule)}
+.study__meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;margin-bottom:12px}
+.study__nick{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:#fff;background:var(--ai);padding:2px 9px}
+.study__cite{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);letter-spacing:.03em}
+.study__q{font-family:"Shippori Mincho B1",serif;font-weight:600;font-size:clamp(17px,3.2vw,21px);line-height:1.6;margin:0 0 10px}
+.study__a{margin:0;font-size:15px;font-weight:700;color:var(--ai);line-height:1.8}
+.study__body{padding:22px 24px 6px}
+.study__cmp{margin-bottom:24px}
+h4.blk{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.1em;
+  color:var(--ink-3);margin:0 0 8px;font-weight:400;
+}
+.blk-p{margin:0 0 22px;font-size:14.5px;color:var(--ink-2)}
+ul.finds{margin:0 0 22px;padding-left:0;list-style:none}
+ul.finds li{position:relative;padding-left:20px;font-size:14.5px;margin-bottom:8px;color:var(--ink-2)}
+ul.finds li::before{content:"▸";position:absolute;left:2px;color:var(--karashi)}
+ul.finds li b{color:var(--ink);font-weight:700}
+.caution{border-left:3px solid var(--enji);background:rgba(154,42,53,.045);padding:12px 16px;margin:0 0 22px}
+.caution h4{color:var(--enji);margin-bottom:6px}
+.caution p{margin:0;font-size:14px;color:var(--ink-2)}
+.study__foot{
+  border-top:1px solid var(--rule);padding:14px 24px;display:flex;flex-wrap:wrap;
+  gap:6px 20px;align-items:center;background:var(--paper-2);
+}
+.fact{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-2)}
+.fact b{color:var(--ink);font-weight:600}
+.study__links{margin-left:auto;display:flex;gap:12px}
+.study__links a{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ai);text-decoration:none;border-bottom:1px solid var(--ai-soft)}
+.study__links a:hover{background:var(--ai);color:#fff;border-color:var(--ai)}
+
+/* ---------- synthesis ---------- */
+.synth{padding:64px 0;border-top:3px double var(--rule);border-bottom:1px solid var(--rule)}
+.synth ol{counter-reset:s;list-style:none;padding:0;margin:0}
+.synth li{counter-increment:s;position:relative;padding-left:52px;margin-bottom:30px}
+.synth li::before{
+  content:counter(s,decimal-leading-zero);position:absolute;left:0;top:2px;
+  font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--karashi);
+  border:1px solid var(--rule);padding:3px 7px;background:var(--card);
+}
+.synth h3{font-family:"Shippori Mincho B1",serif;font-size:18px;margin:0 0 6px;font-weight:600}
+.synth p{margin:0;font-size:14.5px;color:var(--ink-2)}
+
+/* ---------- refs ---------- */
+.refs{padding:56px 0}
+.refs ol{padding-left:0;list-style:none;counter-reset:r;margin:0}
+.refs li{counter-increment:r;position:relative;padding:14px 0 14px 44px;border-bottom:1px dotted var(--rule);font-size:13px;line-height:1.8;color:var(--ink-2)}
+.refs li::before{content:counter(r);position:absolute;left:0;top:15px;font-family:"IBM Plex Mono",monospace;color:var(--karashi);font-size:12px}
+.refs a{color:var(--ai);text-decoration:none;border-bottom:1px solid var(--ai-soft)}
+.disc{background:var(--card);border:1px solid var(--rule);padding:20px 22px;margin-top:36px;font-size:13.5px;color:var(--ink-2)}
+.disc strong{color:var(--ink)}
+footer{padding:30px 0 60px;font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3)}
+
+@media (max-width:640px){
+  .hero{padding:48px 0 32px}
+  .cmp__row{grid-template-columns:1fr 4.8em;grid-template-areas:"lab lab" "track val";gap:5px 10px;margin-bottom:14px}
+  .cmp__lab{grid-area:lab}.cmp__track{grid-area:track}.cmp__val{grid-area:val}
+  .study__head,.study__body{padding-left:17px;padding-right:17px}
+  .study__foot{padding-left:17px;padding-right:17px}
+  .study__links{margin-left:0;width:100%;margin-top:4px}
+}
+a:focus-visible,.study:focus-visible{outline:2px solid var(--karashi);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .cmp__fill{transition:none;width:var(--w)}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">WHAT THE EVIDENCE ACTUALLY SAYS ／ 15 TRIALS</p>
+    <h1>論文<em>紹介</em></h1>
+    <p class="hero__sub">減量・食事・運動・睡眠をめぐる15本の臨床研究を、原著にあたって読み解く</p>
+    <p class="hero__lede">
+      「結局、いちばん効くダイエット法は何なのか」。<br>
+      この問いに、世の中は無数の断言で答えてくれます。低糖質か低脂肪か、16時間断食は効くのか、有酸素運動とHIITはどちらが痩せるのか。断言はどれも力強く、そして互いに矛盾しています。
+      一方で臨床研究が答えているのは、もっと限定的な問いです——<b>誰に、何と比べて、どれくらいの差がついたのか</b>。ここに集めた15本は、その「どれくらい」を実際の数字で持っている研究です。
+      読み進めると、おそらく予想と違う傾向が見えてきます。<b>方法どうしを比べると、驚くほど差がつかない</b>。ではどこで差がつくのか——それが、15本を並べて初めて見えてくるものです。
+      数字を覚える必要はありません。バーの長さの違いだけ見てください。
+    </p>
+    <p class="hero__note mono">※ 研究結果はいずれも「集団の平均」です。同じ方法を試して、同じ結果になるとは限りません。</p>
+
+    <div class="legend">
+      <span class="legend__tag mono">バーの読み方</span>
+      <div class="cmp js-cmp">
+        <p class="cmp__metric">例：1年後に体重は何％減ったか</p>
+        <div class="cmp__row">
+          <span class="cmp__lab">試したほう（介入群）</span>
+          <span class="cmp__track"><i class="cmp__fill" style="--w:86%"></i></span>
+          <span class="cmp__val">−8.6%</span>
+        </div>
+        <div class="cmp__row">
+          <span class="cmp__lab">比べたほう（対照群）</span>
+          <span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:7%"></i></span>
+          <span class="cmp__val">−0.7%</span>
+        </div>
+        <p class="cmp__diff">この2本の長さの差 <b>7.9ポイント</b> が、その方法の「効果」です。</p>
+      </div>
+      <p class="legend__note">
+        <span class="mono" style="color:var(--ai)">■ 濃い藍</span>＝新しく試した方法。
+        <span class="mono" style="color:var(--hai)">■ 灰</span>＝比較のためのふつうの生活や従来の指導。
+        バーが2本ともほぼ同じ長さなら、それは「どちらでも同じだった」という、それ自体が重要な結果です。
+      </p>
+    </div>
+  </div>
+</header>
+
+<section class="guide">
+  <div class="wrap">
+    <p class="sec__eyebrow">READING KIT</p>
+    <h2 class="sec">先に、5つの言葉だけ</h2>
+    <p class="sec__lede">この5つを知っていれば、以下の15本はすべて自力で読めます。</p>
+    <div class="guide__grid">
+      <dl class="term"><dt>ランダム化比較試験</dt><dd>参加者をくじ引きで2つ以上のグループに分け、片方だけに新しい方法を試す設計。「やる気のある人ほど成功する」といった偏りを消すための、いちばん強い証拠のつくり方です。</dd></dl>
+      <dl class="term"><dt>対照群</dt><dd>比較のために、あえて何もしない／従来どおりにするグループ。人は研究に参加するだけで生活が変わるので、対照群がないと効果を測れません。</dd></dl>
+      <dl class="term"><dt>n（エヌ）</dt><dd>参加人数。n=11とn=5,145では、同じ「有効だった」でも重みがまったく違います。少人数の結果は結論ではなく仮説です。</dd></dl>
+      <dl class="term"><dt>メタ解析</dt><dd>同じテーマの試験を集めて統計的にまとめ直したもの。1本では偶然かもしれない結果を、束にして確かめます。</dd></dl>
+      <dl class="term"><dt>「差がなかった」</dt><dd>効果がゼロという意味ではなく、「この人数・この期間では違いを検出できなかった」という意味。差がないなら、続けやすいほうを選べばいい、という実用的な答えになります。</dd></dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ I ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="sec__eyebrow">GROUP I ／ 2 STUDIES</p>
+    <h2 class="sec">生活をまるごと変えると、どうなるか</h2>
+    <p class="sec__lede">個々のテクニックの前に、「食事も運動も行動も、専門家がついて本気で変えたら1年でどこまでいくのか」。ここが他のすべての研究の物差しになります。</p>
+
+    <!-- 1 Look AHEAD -->
+    <article class="study" id="lookahead">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">Look AHEAD</span><span class="study__cite">Diabetes Care, 2007 ／ 米国</span></div>
+        <p class="study__q">食事も運動も本気で指導したら、1年でどれだけ減るのか。</p>
+        <p class="study__a">平均で体重の8.6%。ただし比較相手（教育のみ）はほぼ0%だった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">1年後の体重変化（％）</p>
+          <div class="cmp__row"><span class="cmp__lab">集中的な生活習慣介入</span><span class="cmp__track"><i class="cmp__fill" style="--w:86%"></i></span><span class="cmp__val">−8.6%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">糖尿病の教育のみ</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:7%"></i></span><span class="cmp__val">−0.7%</span></div>
+          <p class="cmp__diff">差 <b>約7.9ポイント</b>。体重60kgの人なら約4.7kg分にあたります。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">2型糖尿病があり太りぎみの成人5,145人を、2つのグループにくじ引きで分けました。片方には、カロリーを抑えた食事、週175分の運動、そして頻繁な面談とグループ指導からなる「集中プログラム」を1年間。もう片方には、糖尿病についての教育セッションを年3回だけ行いました。減量支援の研究としては世界最大級の規模です。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>体重は<b>平均8.6%減少</b>。減量支援として現実的に到達しうる上限に近い数字です。</li>
+          <li>血糖の指標（HbA1c）が<b>7.3%から6.6%へ低下</b>し、糖尿病の薬を減らせた人が多くいました。</li>
+          <li>血圧、中性脂肪、HDLコレステロール、体力もそろって改善しました。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>この試験を長期（中央値9.6年）追跡した続報では、心筋梗塞や脳卒中といった<b>心血管イベントの発生率に差がつきませんでした</b>。「体重が減る」ことと「病気が減る」ことは別の問いであり、前者が示せても後者が自動的についてくるわけではない——15本のなかで最も重い教訓です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>5,145</b></span><span class="fact">期間 <b>1年</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.2337/dc07-0048">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/17363746/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 6 PREDIMED-Plus -->
+    <article class="study" id="predimedplus">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">PREDIMED-Plus</span><span class="study__cite">Diabetes Care, 2019 ／ スペイン</span></div>
+        <p class="study__q">地中海食に「カロリー制限と運動」を足すと、上乗せはあるのか。</p>
+        <p class="study__a">ある。1年で3.2kg減と、助言だけの群（0.7kg減）を明確に上回った。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">1年後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">制限あり地中海食＋運動</span><span class="cmp__track"><i class="cmp__fill" style="--w:80%"></i></span><span class="cmp__val">−3.2kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">地中海食の助言のみ</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:17%"></i></span><span class="cmp__val">−0.7kg</span></div>
+          <p class="cmp__diff">差 <b>約2.5kg</b>。腹囲でも約2.6cmの差がつきました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">メタボリックシンドロームがあり太りぎみの55〜75歳を対象に、片方には「カロリーを約30%抑えた地中海食＋週の身体活動目標＋行動サポート」を、もう片方には従来どおり「カロリー制限なしの地中海食」を助言しました。ここで報告されているのは、大規模試験の最初の1年分の結果です。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>体重・腹囲ともに、<b>制限と運動を足した群のほうがはっきり大きく減少</b>しました。</li>
+          <li>つまり「地中海食は健康的だから量は気にしなくていい」とは言えません。<b>食事の質と量は別々の変数</b>です。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>参加者はもともと地中海食に馴染んだ地域の高齢者です。食文化の異なる集団に、この差がそのまま当てはまるとは限りません。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>626</b></span><span class="fact">期間 <b>1年</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.2337/dc18-0836">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/30389673/">PubMed</a></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ II ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="sec__eyebrow">GROUP II ／ 4 STUDIES</p>
+    <h2 class="sec">何を食べるか</h2>
+    <p class="sec__lede">低脂肪か低糖質か、たんぱく質は、食物繊維は、遺伝子は。「どの食事法が正解か」という問いに、4本の研究がそろって同じ方向の答えを返しています。</p>
+
+    <!-- 9 DIETFITS -->
+    <article class="study" id="dietfits">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">DIETFITS</span><span class="study__cite">JAMA, 2018 ／ 米国</span></div>
+        <p class="study__q">低脂肪と低糖質、どちらが痩せるのか。遺伝子で向き不向きは決まるのか。</p>
+        <p class="study__a">どちらでもほぼ同じ。遺伝子型で結果は変わらなかった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">12か月後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">健康的な低糖質食</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:60%"></i></span><span class="cmp__val">−6.0kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">健康的な低脂肪食</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:53%"></i></span><span class="cmp__val">−5.3kg</span></div>
+          <p class="cmp__diff is-null">差は <b>統計的に有意でなし</b>。ただし個人差は −30kg から +10kg まで、きわめて大きく開きました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">太りぎみの成人609人を低脂肪食群と低糖質食群に分け、12か月追跡しました。特徴は2つ。どちらの群にも「カロリーを数えるな、野菜を増やし加工食品と砂糖を減らせ」と指導したこと。そして事前に、脂質・糖質の代謝に関わる遺伝子型とインスリン分泌量を測定し、「体質に合う食事」仮説を検証したことです。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>2つの食事法の差は<b>1kgに満たず、誤差の範囲</b>でした。</li>
+          <li>遺伝子型パターンともインスリン分泌量とも、<b>相互作用は認められませんでした</b>。「あなたの遺伝子はこの食事向き」という当時の売り文句を、正面から検証して否定した形です。</li>
+          <li>一方で同じ食事法でも人によって結果は劇的に違いました。<b>差を生んでいるのは食事の種類ではなく別の何か</b>だ、というのが最大の示唆です。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>否定されたのはこの試験で使われた特定の遺伝子型パターンです。「遺伝と栄養は無関係」という結論ではなく、「当時の市販レベルの遺伝子分類では食事法を選び分けられなかった」と読むのが正確です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>609</b></span><span class="fact">期間 <b>12か月</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.1001/jama.2018.0245">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/29466592/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 8 Fiber -->
+    <article class="study" id="ma2015">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">食物繊維だけ vs 全部</span><span class="study__cite">Annals of Internal Medicine, 2015 ／ 米国</span></div>
+        <p class="study__q">覚えることが「1つだけ」の食事指導でも、結果は出るのか。</p>
+        <p class="study__a">出る。「繊維を1日30g」だけでも、詳細な多項目指導とほぼ並んだ。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">12か月後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">繊維30gの一点集中</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:47%"></i></span><span class="cmp__val">−2.1kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">多項目の標準的食事指導</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:60%"></i></span><span class="cmp__val">−2.7kg</span></div>
+          <p class="cmp__diff is-null">差は <b>統計的に有意でなし</b>。血圧やインスリン抵抗性の改善も両群で同様でした。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">メタボリックシンドロームの成人240人を、2種類の食事指導に分けました。片方は米国心臓協会式の多項目指導（飽和脂肪を減らす、糖質の質を上げる、野菜と果物を増やす、塩分を減らす…）。もう片方に伝えた目標は、たった1つ「食物繊維を1日30g以上とる」だけです。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>減量幅も代謝指標の改善も、<b>両群でほぼ同等</b>でした。</li>
+          <li>繊維を増やそうとすると、豆・全粒穀物・野菜が自然に増え、その分ほかが減ります。<b>1つのルールが食事全体を引っぱる</b>という構造です。</li>
+          <li>実務的な含意は明快です。守れない完璧な計画より、<b>守れる単純な計画</b>のほうが結果につながる可能性がある。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>1年で約2kgという減量幅は、Look AHEADの8.6%と比べればかなり小さい値です。「簡単な方法でも同じくらい効く」のであって、「簡単な方法で大きく減る」わけではありません。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>240</b></span><span class="fact">期間 <b>12か月</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.7326/M14-0611">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/25686165/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 5 Protein -->
+    <article class="study" id="longland">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">高たんぱく＋高強度運動</span><span class="study__cite">Am J Clin Nutr, 2016 ／ カナダ</span></div>
+        <p class="study__q">減量中に、筋肉を落とさずに脂肪だけ落とせるのか。</p>
+        <p class="study__a">条件つきで可能。たんぱく質を倍にした群は、減量中に筋肉が増えた。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">4週間後の体脂肪量／除脂肪量の変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">高たんぱく（2.4g/kg）</span><span class="cmp__track"><i class="cmp__fill" style="--w:80%"></i></span><span class="cmp__val">脂肪 −4.8</span></div>
+          <div class="cmp__row"><span class="cmp__lab">低たんぱく（1.2g/kg）</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:58%"></i></span><span class="cmp__val">脂肪 −3.5</span></div>
+          <p class="cmp__diff">除脂肪量は高たんぱく群で <b>+1.2kg</b>、低たんぱく群で <b>+0.1kg</b>。脂肪を余計に落としながら筋肉は増えました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">若い男性40人に、必要量より40%少ないエネルギーの食事を4週間。全員が週6日、レジスタンス運動と高強度インターバルを行いました。違いはたんぱく質量だけで、体重1kgあたり2.4g（高）か1.2g（低）か。食事はすべて研究側が用意し、摂取量を厳密に管理しています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>強いエネルギー不足の下でも、<b>高たんぱく＋しっかりした運動なら除脂肪量は維持どころか増加</b>しました。</li>
+          <li>体重計の数字だけを見ていると、この違いは見えません。<b>減った中身（脂肪か筋肉か）を分けて考える</b>必要があります。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>期間はわずか4週間、対象は若く健康な男性のみ、食事も運動も研究室レベルで管理された特殊条件です。日常生活にそのまま置き換えられる数字ではなく、「原理の証明」として読むべき研究です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>40</b></span><span class="fact">期間 <b>4週間</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.3945/ajcn.115.119339">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/26817506/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 7 PREDIMED -->
+    <article class="study" id="predimed">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">PREDIMED</span><span class="study__cite">NEJM, 2018（訂正・再解析版）／ スペイン</span></div>
+        <p class="study__q">食事のパターンは、体重ではなく「病気そのもの」を減らせるのか。</p>
+        <p class="study__a">減らせた。約4.8年で心血管イベントが約3割少なかった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">追跡期間中に心筋梗塞・脳卒中・心血管死が起きた人の割合</p>
+          <div class="cmp__row"><span class="cmp__lab">地中海食＋オリーブ油</span><span class="cmp__track"><i class="cmp__fill" style="--w:63%"></i></span><span class="cmp__val">約3.8%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">地中海食＋ナッツ</span><span class="cmp__track"><i class="cmp__fill" style="--w:56%"></i></span><span class="cmp__val">約3.4%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">低脂肪食の助言</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:73%"></i></span><span class="cmp__val">約4.4%</span></div>
+          <p class="cmp__diff">相対的なリスクは <b>約28〜31%低下</b>。ただし実数の差は100人あたり1人未満です。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">心血管の高リスク者約7,400人を、①エクストラバージンオリーブ油を補った地中海食、②ナッツを補った地中海食、③低脂肪食の助言、の3群に分け、中央値4.8年追跡しました。カロリー制限も運動指導もなく、変えたのは「何を食べるか」だけです。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>地中海食の2群で<b>心血管イベントが有意に少なく</b>なりました。体重ではなく病気を減らした、数少ない食事試験です。</li>
+          <li>「相対リスク3割減」と「100人中1人弱の差」は同じ事実の2つの言い方です。<b>相対の数字だけを見ると効果を過大評価</b>します。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>この論文は2013年版がいったん撤回され、2018年に訂正・再解析されたものです。一部施設で、個人ではなく世帯や村単位で割り付けるなど<b>ランダム化の手続きに不備</b>が見つかったためです。再解析でも結論は維持されましたが、「大規模で権威ある試験でも手続きは検証されうる」という事例として記憶する価値があります。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>約7,400</b></span><span class="fact">期間 <b>中央値4.8年</b></span><span class="fact">ランダム化比較試験（再解析）</span>
+        <span class="study__links"><a href="https://doi.org/10.1056/NEJMoa1800389">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/29897866/">PubMed</a></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ III ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="sec__eyebrow">GROUP III ／ 3 STUDIES</p>
+    <h2 class="sec">いつ食べるか</h2>
+    <p class="sec__lede">「時間制限食（16時間断食）」は効くのか。ここには結論の分かれた2本が並んでいます。矛盾しているのではなく、<b>比べた相手が違う</b>——それが読みどころです。</p>
+
+    <!-- 3 eTRE -->
+    <article class="study" id="jamshed">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">早い時間の時間制限食</span><span class="study__cite">JAMA Internal Medicine, 2022 ／ 米国</span></div>
+        <p class="study__q">同じカロリーでも、朝型の8時間に食べれば余分に減るのか。</p>
+        <p class="study__a">14週間で2.3kg分だけ余分に減った。ただし体脂肪量の差ははっきりしなかった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">14週間後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">7〜15時の8時間食＋制限</span><span class="cmp__track"><i class="cmp__fill" style="--w:79%"></i></span><span class="cmp__val">−6.3kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">12時間以上の食事＋制限</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:50%"></i></span><span class="cmp__val">−4.0kg</span></div>
+          <p class="cmp__diff">差 <b>約2.3kg</b>。血圧（拡張期）と気分の指標も、時間制限群で良好でした。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">肥満の成人90人を、朝7時から15時までの8時間に食事を収める群と、12時間以上に広げる群に分けました。重要なのは、<b>両群のカロリー制限を同じに揃えた</b>点です。これにより「食べる量」ではなく「食べる時間帯」そのものの効果を切り出そうとしています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>カロリーが同じでも、<b>食べる時間帯を朝寄りに寄せた群のほうが体重は多く減りました</b>。</li>
+          <li>一方で、体脂肪量の減り方の差は明確ではありませんでした。減った中身の内訳までは示せていません。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>この「15時までに食べ終える」という条件は、多くの人の生活リズムでは維持が困難です。試験で守れたことと、日常で続けられることは別問題です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>90</b></span><span class="fact">期間 <b>14週</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.1001/jamainternmed.2022.3050">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/35939311/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 4 TREATY -->
+    <article class="study" id="treaty">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">カロリー制限±時間制限</span><span class="study__cite">NEJM, 2022 ／ 中国</span></div>
+        <p class="study__q">きちんとカロリーを制限している人が、さらに時間制限を足す意味はあるか。</p>
+        <p class="study__a">12か月では、上乗せ効果は確認できなかった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">12か月後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">カロリー制限＋8時間食</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:80%"></i></span><span class="cmp__val">−8.0kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">カロリー制限のみ</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:63%"></i></span><span class="cmp__val">−6.3kg</span></div>
+          <p class="cmp__diff is-null">差 約1.8kg は <b>統計的に有意でなし</b>。偶然の範囲を超えられませんでした。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">肥満の成人139人が全員、男性1,500〜1,800kcal／女性1,200〜1,500kcalのカロリー制限を12か月間実施。その上で片方の群だけ、食事を8時から16時までの8時間に限定しました。参加者は食事の写真と記録で管理されています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>両群とも6〜8kg減りましたが、<b>時間制限の追加による差は検出されませんでした</b>。</li>
+          <li>体脂肪、腹囲、血圧、血糖などの代謝指標でも、群間差は認められませんでした。</li>
+          <li>前項のeTRE試験と合わせて読むと解釈が立ちます。<b>時間制限が効くのは、それが結果的に食べる量を減らすから</b>。すでにカロリーを管理している人には上乗せがない、という一貫した見方です。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>「差がなかった」は「無意味」ではありません。カロリー計算が苦手な人にとって、時間を区切ることは実行しやすい手段になりえます。効果の経路が違うだけです。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>139</b></span><span class="fact">期間 <b>12か月</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.1056/NEJMoa2114833">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/35443107/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 15 Food order -->
+    <article class="study" id="shukla">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">食べる順番</span><span class="study__cite">Diabetes Care, 2015 ／ 米国</span></div>
+        <p class="study__q">同じ献立でも、炭水化物を最後に回すと血糖は変わるのか。</p>
+        <p class="study__a">大きく変わった。食後60分の血糖が約37%低かった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">食後60分の血糖上昇（炭水化物が先＝100として）</p>
+          <div class="cmp__row"><span class="cmp__lab">野菜・肉が先、炭水化物が後</span><span class="cmp__track"><i class="cmp__fill" style="--w:63%"></i></span><span class="cmp__val">約63</span></div>
+          <div class="cmp__row"><span class="cmp__lab">炭水化物が先</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:100%"></i></span><span class="cmp__val">100</span></div>
+          <p class="cmp__diff">30分後で約29%、60分後で約37%低下。<b>インスリンの分泌も抑えられました</b>。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">2型糖尿病の11人が、同一の献立（パン・オレンジジュース・サラダ・鶏肉）を、日を変えて2通りの順番で食べました。同じ人が両方の条件を体験する「クロスオーバー」設計で、個人差の影響を打ち消しています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>食べる中身が同じでも、<b>順番だけで食後血糖のピークが大きく下がりました</b>。</li>
+          <li>費用も我慢も不要で、今日から実行できる数少ない介入です。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p><b>参加者はわずか11人、しかも1回の食事の測定</b>です。体重が減るかどうかも、長期の血糖管理が改善するかどうかも、この研究は答えていません。「有望な仮説」の段階として扱うのが妥当です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>11</b></span><span class="fact">単回の食事試験</span><span class="fact">クロスオーバー</span>
+        <span class="study__links"><a href="https://doi.org/10.2337/dc15-0429">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/26106234/">PubMed</a></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ IV ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="sec__eyebrow">GROUP IV ／ 3 STUDIES</p>
+    <h2 class="sec">どう動くか</h2>
+    <p class="sec__lede">運動は「体重を減らす手段」としては驚くほど非力です。にもかかわらず外せない理由が、3本目にあります。</p>
+
+    <!-- 10 HIIT -->
+    <article class="study" id="wewege">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">HIIT vs 有酸素</span><span class="study__cite">Obesity Reviews, 2017 ／ メタ解析</span></div>
+        <p class="study__q">短時間の激しい運動は、長い有酸素運動の代わりになるのか。</p>
+        <p class="study__a">体脂肪の減り方はほぼ同じ。ただし所要時間は短くて済む。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">体脂肪量・体脂肪率の減少（13試験を統合）</p>
+          <div class="cmp__row"><span class="cmp__lab">高強度インターバル</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:62%"></i></span><span class="cmp__val">同程度</span></div>
+          <div class="cmp__row"><span class="cmp__lab">中強度の持続的運動</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:62%"></i></span><span class="cmp__val">同程度</span></div>
+          <p class="cmp__diff is-null">両者に <b>有意差なし</b>。ただしHIITは実施に要する時間が大幅に短いと報告されています。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">過体重・肥満の成人を対象に、高強度インターバル運動と中強度の持続的運動を比較した13件のランダム化試験（計約420人）を集め、統計的に統合しました。1本の試験より結論の信頼性が高い形式です。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>体脂肪の減少量に、<b>2つの方法の優劣はつきませんでした</b>。</li>
+          <li>差がつくのは効果ではなく効率です。<b>時間がないならHIIT、きつさが苦手なら中強度</b>——選択基準は続けやすさになります。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>どちらの方法でも、運動単独による体脂肪の減少幅はそれほど大きくありません。運動は食事の置き換えではなく、追加の要素として位置づけるのが実態に合っています。高強度運動には整形外科的・心血管的なリスクもあり、開始前の確認が必要です。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">13試験／n=<b>約420</b></span><span class="fact">システマティックレビュー・メタ解析</span>
+        <span class="study__links"><a href="https://doi.org/10.1111/obr.12532">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/28401638/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 11 Pedometer -->
+    <article class="study" id="bravata">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">歩数計</span><span class="study__cite">JAMA, 2007 ／ システマティックレビュー</span></div>
+        <p class="study__q">歩数を「数えるだけ」で、人は本当に多く歩くのか。</p>
+        <p class="study__a">歩く。1日あたり約2,000歩、率にして約27%増えた。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">1日の歩数の変化</p>
+          <div class="cmp__row"><span class="cmp__lab">歩数計を使った人</span><span class="cmp__track"><i class="cmp__fill" style="--w:78%"></i></span><span class="cmp__val">+約2,000歩</span></div>
+          <div class="cmp__row"><span class="cmp__lab">使わなかった人</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:6%"></i></span><span class="cmp__val">ほぼ変化なし</span></div>
+          <p class="cmp__diff">BMIは <b>0.38低下</b>、収縮期血圧は <b>約3.8mmHg低下</b>。数字は小さいながら一貫していました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">歩数計を使った26件の研究（約2,800人分）を集めて統合しました。歩数計そのものは何もしてくれません。行動を「見える化」するだけの装置です。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>測るだけで行動が変わりました。<b>自己モニタリングそれ自体が介入になる</b>という、行動科学の基本原理の実証です。</li>
+          <li>効果を強く予測したのは<b>歩数の目標を持つこと</b>（例：1日1万歩）でした。歩数計を持っているだけでは足りません。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>2007年の研究で、まだスマートフォンもスマートウォッチもない時代のものです。誰もが常時歩数を記録している現在、「歩数計を渡す」ことの新規性効果は当時ほど期待できない可能性があります。またBMI −0.38は、体重にすればごくわずかです。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">26研究／n=<b>2,767</b></span><span class="fact">システマティックレビュー</span>
+        <span class="study__links"><a href="https://doi.org/10.1001/jama.298.19.2296">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/18029834/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 2 Villareal -->
+    <article class="study" id="villareal">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">高齢者の減量＋運動</span><span class="study__cite">NEJM, 2011 ／ 米国</span></div>
+        <p class="study__q">高齢者が減量すると、体は弱るのか強くなるのか。</p>
+        <p class="study__a">運動を併せれば強くなる。食事制限だけだと筋肉と骨を失う。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">1年後の身体機能スコアの改善（4群比較）</p>
+          <div class="cmp__row"><span class="cmp__lab">食事制限＋運動</span><span class="cmp__track"><i class="cmp__fill" style="--w:100%"></i></span><span class="cmp__val">+21%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">運動のみ</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:71%"></i></span><span class="cmp__val">+15%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">食事制限のみ</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:57%"></i></span><span class="cmp__val">+12%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">対照</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:5%"></i></span><span class="cmp__val">+1%</span></div>
+          <p class="cmp__diff">体重が最も減ったのは食事制限のみの群（約10%）ですが、<b>体が最も良くなったのは併用群</b>でした。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">65歳以上の肥満高齢者107人を、対照／食事制限のみ／運動のみ／併用の4群に分け、1年間追跡しました。主要な評価項目は体重ではなく、歩行や立ち上がりを含む<b>身体機能テストのスコア</b>です。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>身体機能の改善は<b>併用群が最大</b>。体重の減少幅と機能の改善幅は一致しませんでした。</li>
+          <li>食事制限のみの群では、<b>除脂肪量と股関節の骨密度が大きく減少</b>しました。運動を併せた群ではその損失が明らかに小さくなりました。</li>
+          <li>高齢者の減量では「何kg減ったか」より<b>「何を失わずに減らせたか」</b>が問われる、という設計思想そのものが結論です。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>対象は肥満で身体機能の低下がある高齢者です。標準体重の高齢者に減量を勧める根拠にはなりません。高齢期の意図しない体重減少は、むしろリスクの兆候として扱われます。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>107</b></span><span class="fact">期間 <b>1年</b></span><span class="fact">ランダム化比較試験（4群）</span>
+        <span class="study__links"><a href="https://doi.org/10.1056/NEJMoa1008234">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/21449785/">PubMed</a></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ V ============ -->
+<section class="section">
+  <div class="wrap">
+    <p class="sec__eyebrow">GROUP V ／ 3 STUDIES</p>
+    <h2 class="sec">飲み物と、眠り</h2>
+    <p class="sec__lede">意識して「がんばる」対象になりにくい2つの領域。ここに、努力量あたりの効果が最も大きい介入が紛れています。</p>
+
+    <!-- 13 CHOICE -->
+    <article class="study" id="choice">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">CHOICE</span><span class="study__cite">Am J Clin Nutr, 2012 ／ 米国</span></div>
+        <p class="study__q">甘い飲み物を水かゼロカロリー飲料に替えるだけで、痩せるのか。</p>
+        <p class="study__a">わずかに減るが、群間の差は明確につかなかった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">6か月後の体重変化（％）</p>
+          <div class="cmp__row"><span class="cmp__lab">水に置き換え</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:60%"></i></span><span class="cmp__val">約−2.5%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">ダイエット飲料に置き換え</span><span class="cmp__track"><i class="cmp__fill is-tie" style="--w:60%"></i></span><span class="cmp__val">約−2.5%</span></div>
+          <div class="cmp__row"><span class="cmp__lab">対照（自由選択）</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:48%"></i></span><span class="cmp__val">約−2%</span></div>
+          <p class="cmp__diff is-null">群間の差は <b>統計的に有意でなし</b>。ただし置換した2群では、5%以上減量できた人の割合が高い傾向がありました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">太りぎみの成人318人を3群に分け、6か月間。2群には1日2杯以上のカロリー飲料を、水またはダイエット飲料に置き換えるよう指導し、残る1群は自由に選ばせました（ただし全員が健康情報を受け取っています）。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>3群とも約2%減量し、<b>置換の有無で明確な差はつきませんでした</b>。</li>
+          <li>対照群も研究に参加している時点で行動が変わっており、差が出にくい設計だった可能性があります。</li>
+          <li>「甘い飲み物をやめる」は有用な習慣ですが、<b>それ単独で大きな減量が起こるとは示せていません</b>。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>もともとカロリー飲料をあまり飲まない人には、この置換の余地自体がありません。効果は元の摂取量に依存します。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>318</b></span><span class="fact">期間 <b>6か月</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.3945/ajcn.111.026278">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/22301929/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 14 Water vs diet -->
+    <article class="study" id="madjd">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">水 vs ダイエット飲料</span><span class="study__cite">Am J Clin Nutr, 2015 ／ イラン</span></div>
+        <p class="study__q">ゼロカロリー飲料と水では、どちらが減量に有利か。</p>
+        <p class="study__a">24週間で水のほうが1.2kg多く減り、インスリン関連の指標も良好だった。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">24週間後の体重変化（kg）</p>
+          <div class="cmp__row"><span class="cmp__lab">昼食後に水</span><span class="cmp__track"><i class="cmp__fill" style="--w:88%"></i></span><span class="cmp__val">−8.8kg</span></div>
+          <div class="cmp__row"><span class="cmp__lab">昼食後にダイエット飲料</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:76%"></i></span><span class="cmp__val">−7.6kg</span></div>
+          <p class="cmp__diff">差 <b>約1.2kg</b>。空腹時インスリンとインスリン抵抗性の改善も水の群で大きくなりました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">過体重・肥満の女性89人が全員、低エネルギー食を24週間実施。違いは昼食後に飲むものだけで、水かダイエット飲料かにランダムに割り付けられました。前項のCHOICE試験とは逆に、<b>減量プログラムの中での両者の比較</b>になっています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>両群とも大きく減量しましたが、<b>水の群のほうがやや有利</b>でした。</li>
+          <li>「ゼロカロリーだから同じ」とは限らない可能性を示していますが、差そのものは1.2kgと小さなものです。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>対象は<b>単一施設の女性のみ</b>で、食文化的背景も限定的です。両群とも8kg近く減っているのは、飲み物ではなく低エネルギー食の効果です。飲み物の選択は主役ではありません。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>89</b></span><span class="fact">期間 <b>24週</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.3945/ajcn.115.109397">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/26537940/">PubMed</a></span>
+      </div>
+    </article>
+
+    <!-- 12 Sleep -->
+    <article class="study" id="tasali">
+      <div class="study__head">
+        <div class="study__meta"><span class="study__nick">睡眠延長</span><span class="study__cite">JAMA Internal Medicine, 2022 ／ 米国</span></div>
+        <p class="study__q">睡眠を1時間延ばすだけで、食べる量は減るのか。</p>
+        <p class="study__a">減った。1日あたり約270kcal、何も我慢させずに。</p>
+      </div>
+      <div class="study__body">
+        <div class="cmp js-cmp study__cmp">
+          <p class="cmp__metric">1日のエネルギー摂取量の変化（二重標識水法で客観測定）</p>
+          <div class="cmp__row"><span class="cmp__lab">睡眠を延ばす助言</span><span class="cmp__track"><i class="cmp__fill" style="--w:90%"></i></span><span class="cmp__val">−約270kcal</span></div>
+          <div class="cmp__row"><span class="cmp__lab">対照（通常どおり）</span><span class="cmp__track"><i class="cmp__fill is-ctrl" style="--w:4%"></i></span><span class="cmp__val">ほぼ変化なし</span></div>
+          <p class="cmp__diff">体重は2週間で <b>−0.48kg vs +0.39kg</b>。睡眠時間は平均で約1.2時間延びました。</p>
+        </div>
+        <h4 class="blk">何をした研究か</h4>
+        <p class="blk-p">習慣的に6.5時間未満しか眠らない太りぎみの成人80人を対象に、片方の群にだけ<b>1回の個別カウンセリング</b>で睡眠環境の助言を行い、2週間追跡しました。食事の指導は一切ありません。摂取カロリーは自己申告ではなく、二重標識水法という客観的な手法で測定されています。</p>
+        <h4 class="blk">わかったこと</h4>
+        <ul class="finds">
+          <li>食事について何も言われていないのに、<b>自然に食べる量が減りました</b>。</li>
+          <li>1回の助言で睡眠が延び、その効果として摂取量が変わった——<b>介入コストあたりの効果が15本中で際立って高い</b>研究です。</li>
+          <li>「意志が弱いから食べすぎる」という説明の前に、<b>睡眠不足という生理的条件</b>を疑う根拠になります。</li>
+        </ul>
+        <div class="caution"><h4 class="blk">ここは注意</h4><p>期間は<b>わずか2週間</b>です。この摂取量の減少が長期に持続するか、実際に減量につながるかは、この試験では確認されていません。また対象は「もともと睡眠が短い人」であり、すでに十分眠っている人がさらに延ばして得をするという話ではありません。</p></div>
+      </div>
+      <div class="study__foot">
+        <span class="fact">n=<b>80</b></span><span class="fact">期間 <b>2週</b></span><span class="fact">ランダム化比較試験</span>
+        <span class="study__links"><a href="https://doi.org/10.1001/jamainternmed.2021.8098">DOI</a><a href="https://pubmed.ncbi.nlm.nih.gov/35129580/">PubMed</a></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ synthesis ============ -->
+<section class="synth">
+  <div class="wrap">
+    <p class="sec__eyebrow">WHAT THE 15 SAY TOGETHER</p>
+    <h2 class="sec">15本を通して見えること</h2>
+    <p class="sec__lede">個別の数字ではなく、並べたときに浮かび上がるパターンのほうが重要です。</p>
+    <ol>
+      <li>
+        <h3>「どの方法か」より「続けられるか」</h3>
+        <p>低脂肪と低糖質は引き分け。繊維一点集中と多項目指導も引き分け。HIITと有酸素も引き分け。方法どうしを比べると、驚くほど差がつきません。一方、同じ方法の中での<b>個人差は数十kg規模</b>で開きます。差を生んでいるのは方法の選択ではなく、実行と継続です。</p>
+      </li>
+      <li>
+        <h3>効果の現実的なスケールは「1年で3〜9%」</h3>
+        <p>専門家が全面的に支援した最大規模の試験で8.6%。現実的な食事指導で2〜3kg。この幅が、生活習慣介入で期待できる範囲です。それより大きな数字を掲げる主張には、根拠を確認する価値があります。</p>
+      </li>
+      <li>
+        <h3>体重が減ることと、病気が減ることは別</h3>
+        <p>Look AHEADは体重を大きく減らしましたが、長期の心血管イベントは減りませんでした。逆にPREDIMEDは体重をほとんど変えずにイベントを減らしました。<b>体重は目的ではなく、指標のひとつ</b>にすぎません。</p>
+      </li>
+      <li>
+        <h3>減らすなら、失うものを管理する</h3>
+        <p>高齢者の食事制限だけの群は筋肉と骨密度を失い、運動を併せた群はそれを防ぎました。高たんぱく＋運動では減量中に筋肉が増えました。<b>体重計は「何が減ったか」を教えてくれません</b>。</p>
+      </li>
+      <li>
+        <h3>努力せずに変わる領域がある</h3>
+        <p>睡眠を延ばしたら1日270kcal減り、歩数を数えたら2,000歩増え、食べる順番を変えたら血糖が下がりました。いずれも「我慢」を必要としません。<b>意志の量を増やす前に、条件のほうを変える</b>——これが15本から取り出せる、最も実用的な方針です。</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="refs">
+  <div class="wrap">
+    <p class="sec__eyebrow">SOURCES</p>
+    <h2 class="sec">出典一覧</h2>
+    <p class="sec__lede">すべて査読済みの原著論文です。本文の要約に疑問があれば、必ず原典にあたってください。</p>
+    <ol>
+      <li>Look AHEAD Research Group, et al. Reduction in Weight and Cardiovascular Disease Risk Factors in Individuals with Type 2 Diabetes: One-Year Results of the Look AHEAD Trial. <i>Diabetes Care</i>. 2007;30(6):1374–1383. <a href="https://doi.org/10.2337/dc07-0048">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/17363746/">PubMed</a></li>
+      <li>Villareal DT, et al. Weight Loss, Exercise, or Both and Physical Function in Obese Older Adults. <i>NEJM</i>. 2011;364(13):1218–1229. <a href="https://doi.org/10.1056/NEJMoa1008234">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/21449785/">PubMed</a></li>
+      <li>Jamshed H, et al. Effectiveness of Early Time-Restricted Eating for Weight Loss, Fat Loss, and Cardiometabolic Health in Adults With Obesity. <i>JAMA Intern Med</i>. 2022;182(9):953–962. <a href="https://doi.org/10.1001/jamainternmed.2022.3050">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/35939311/">PubMed</a></li>
+      <li>Liu D, et al. Calorie Restriction with or without Time-Restricted Eating in Weight Loss. <i>NEJM</i>. 2022;386(16):1495–1504. <a href="https://doi.org/10.1056/NEJMoa2114833">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/35443107/">PubMed</a></li>
+      <li>Longland TM, et al. Higher Compared with Lower Dietary Protein during an Energy Deficit Combined with Intense Exercise. <i>Am J Clin Nutr</i>. 2016;103(3):738–746. <a href="https://doi.org/10.3945/ajcn.115.119339">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/26817506/">PubMed</a></li>
+      <li>Salas-Salvadó J, et al. Effect of a Lifestyle Intervention Program With Energy-Restricted Mediterranean Diet and Exercise: One-Year Results of the PREDIMED-Plus Trial. <i>Diabetes Care</i>. 2019;42(5):777–788. <a href="https://doi.org/10.2337/dc18-0836">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/30389673/">PubMed</a></li>
+      <li>Estruch R, et al. Primary Prevention of Cardiovascular Disease with a Mediterranean Diet Supplemented with Extra-Virgin Olive Oil or Nuts. <i>NEJM</i>. 2018;378(25):e34. <a href="https://doi.org/10.1056/NEJMoa1800389">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/29897866/">PubMed</a></li>
+      <li>Ma Y, et al. Single-Component versus Multicomponent Dietary Goals for the Metabolic Syndrome. <i>Ann Intern Med</i>. 2015;162(4):248–257. <a href="https://doi.org/10.7326/M14-0611">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/25686165/">PubMed</a></li>
+      <li>Gardner CD, et al. Effect of Low-Fat vs Low-Carbohydrate Diet on 12-Month Weight Loss: The DIETFITS Randomized Clinical Trial. <i>JAMA</i>. 2018;319(7):667–679. <a href="https://doi.org/10.1001/jama.2018.0245">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/29466592/">PubMed</a></li>
+      <li>Wewege M, et al. The Effects of High-Intensity Interval Training vs. Moderate-Intensity Continuous Training on Body Composition. <i>Obes Rev</i>. 2017;18(6):635–646. <a href="https://doi.org/10.1111/obr.12532">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/28401638/">PubMed</a></li>
+      <li>Bravata DM, et al. Using Pedometers to Increase Physical Activity and Improve Health: A Systematic Review. <i>JAMA</i>. 2007;298(19):2296–2304. <a href="https://doi.org/10.1001/jama.298.19.2296">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/18029834/">PubMed</a></li>
+      <li>Tasali E, et al. Effect of Sleep Extension on Objectively Assessed Energy Intake Among Adults With Overweight. <i>JAMA Intern Med</i>. 2022;182(4):365–374. <a href="https://doi.org/10.1001/jamainternmed.2021.8098">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/35129580/">PubMed</a></li>
+      <li>Tate DF, et al. Replacing Caloric Beverages with Water or Diet Beverages for Weight Loss in Adults: The CHOICE Randomized Clinical Trial. <i>Am J Clin Nutr</i>. 2012;95(3):555–563. <a href="https://doi.org/10.3945/ajcn.111.026278">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/22301929/">PubMed</a></li>
+      <li>Madjd A, et al. Effects on Weight Loss in Adults of Replacing Diet Beverages with Water during a Hypoenergetic Diet. <i>Am J Clin Nutr</i>. 2015;102(6):1305–1312. <a href="https://doi.org/10.3945/ajcn.115.109397">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/26537940/">PubMed</a></li>
+      <li>Shukla AP, et al. Food Order Has a Significant Impact on Postprandial Glucose and Insulin Levels. <i>Diabetes Care</i>. 2015;38(7):e98–e99. <a href="https://doi.org/10.2337/dc15-0429">DOI</a>／<a href="https://pubmed.ncbi.nlm.nih.gov/26106234/">PubMed</a></li>
+    </ol>
+
+    <div class="disc">
+      <p style="margin:0 0 10px"><strong>このページの位置づけ</strong></p>
+      <p style="margin:0">掲載した数値は各原著論文の報告値を、一般向けに丸めて要約したものです。研究結果は「集団の平均」であり、特定の個人に何が起こるかを予測するものではありません。持病がある方、服薬中の方、妊娠中の方、成長期の方の食事・運動・減量については、必ず医師や管理栄養士など専門職にご相談ください。体重や食事について強い不安や苦しさを感じている場合は、減量そのものより先に専門家へ相談することをおすすめします。</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">15 CLINICAL TRIALS ／ 一般向け解説版 ／ 出典はすべて査読付き原著論文</div>
+</footer>
+
+<script>
+(function(){
+  var els = document.querySelectorAll('.js-cmp');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(e){e.classList.add('is-visible')});
+    return;
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(en.isIntersecting){
+        en.target.classList.add('is-visible');
+        io.unobserve(en.target);
+      }
+    });
+  },{threshold:0.25});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
