@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>管理画面 - 登録メール一覧</title>
+<title>管理画面 - 登録一覧</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -15,10 +15,11 @@
   --ink2:#5f6d7a;
   --indigo:#0d6efd;
   --line:#dce4ea;
+  --badge-bg:#eef1f6;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans JP",system-ui,sans-serif;font-size:16px;line-height:1.7;}
-.wrap{max-width:940px;margin:0 auto;padding:20px 16px 40px;}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 40px;}
 header{background:var(--indigo);color:#fff;padding:22px 16px;border-radius:14px;}
 header h1{font-family:"Zen Kaku Gothic New",sans-serif;font-size:22px;margin:0;line-height:1.2;}
 header p{margin:10px 0 0;font-size:14px;color:rgba(255,255,255,.88);}
@@ -27,6 +28,8 @@ label{display:block;font-weight:700;margin-bottom:8px;}
 input[type=password]{width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font:inherit;font-size:15px;}
 button{font:inherit;font-size:15px;font-weight:700;padding:14px 16px;border-radius:12px;border:none;cursor:pointer;background:var(--indigo);color:#fff;}
 button:disabled{opacity:.6;cursor:default;}
+button.secondary{background:#fff;color:var(--indigo);border:1.5px solid var(--indigo);}
+button.small{padding:8px 12px;font-size:13px;border-radius:9px;}
 .note{font-size:14px;color:var(--ink2);margin-top:10px;}
 .feedback{margin-top:12px;font-size:14px;}
 .feedback.error{color:#b22222;}
@@ -40,13 +43,26 @@ th{background:#f8f9fb;font-weight:700;}
 .topbar button{flex:0 0 auto;}
 .hidden{display:none;}
 footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;background:var(--badge-bg);color:var(--ink2);white-space:nowrap;}
+.badge.registered{background:#fff4dd;color:#9a6a00;}
+.badge.active{background:#e3f3ff;color:#0d6efd;}
+.badge.continuing{background:#e9f7ee;color:#1d7a2e;}
+.badge.ended{background:#f1f1f3;color:#5f6d7a;}
+.detail-header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;}
+.detail-header h2{margin:0;font-size:19px;}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-top:16px;}
+.summary-item{background:#f8f9fb;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+.summary-item .label{font-size:12px;color:var(--ink2);font-weight:700;margin:0 0 4px;}
+.summary-item .value{font-size:16px;font-weight:700;}
+.subhead{font-size:15px;font-weight:700;margin:22px 0 8px;}
+.diagnosis-box{white-space:pre-wrap;background:#f8f9fb;border:1px solid var(--line);border-radius:12px;padding:14px;max-height:260px;overflow-y:auto;font-size:13px;color:var(--ink2);}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap">
     <h1>管理画面</h1>
-    <p>登録されたメールアドレスを一覧で確認できます。</p>
+    <p>登録者の一覧と、個人ごとの体重推移・予約メール状況を確認できます。</p>
   </div>
 </header>
 <main class="wrap">
@@ -65,13 +81,45 @@ footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
       <h2 style="margin:0;font-size:18px;">登録一覧</h2>
       <button id="reloadButton">再読込</button>
     </div>
-    <p class="note" id="dataNote">最新100件を表示します。</p>
+    <p class="note" id="dataNote">最新200件を表示します。行の「詳細」から個人ごとの記録を確認できます。</p>
     <div class="feedback" id="dataFeedback"></div>
     <div class="table-wrap">
       <table id="dataTable">
         <thead>
-          <tr><th>登録日時</th><th>メールアドレス</th><th>体重</th><th>プラン</th><th>タグ</th></tr>
+          <tr><th>登録日時</th><th>メールアドレス</th><th>状態</th><th>開始体重</th><th>目標体重</th><th>プラン</th><th></th></tr>
         </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card hidden" id="detailSection">
+    <div class="detail-header">
+      <h2 id="detailEmail">-</h2>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span class="badge" id="detailStatus"></span>
+        <button class="secondary small" id="detailCloseButton">閉じる</button>
+      </div>
+    </div>
+    <p class="feedback" id="detailFeedback"></p>
+
+    <div class="summary-grid" id="detailSummary"></div>
+
+    <div class="subhead">診断結果・タグ</div>
+    <div class="diagnosis-box" id="detailDiagnosis"></div>
+
+    <div class="subhead">体重推移</div>
+    <div class="table-wrap">
+      <table id="weightTable">
+        <thead><tr><th>記録日時</th><th>体重</th><th>チェックイン</th><th>フィードバック送信</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="subhead">予約メール状況</div>
+    <div class="table-wrap">
+      <table id="emailTable">
+        <thead><tr><th>マイルストーン</th><th>予定日時</th><th>状態</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -83,21 +131,70 @@ footer{margin-top:22px;font-size:13px;color:var(--ink2);text-align:center;}
 <script>
 const DIET_SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
 const DIET_SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
-const DIET_SUPABASE_TABLE = 'registrations';
 const DIET_SUPABASE_CLIENT = window.supabase
   ? window.supabase.createClient(DIET_SUPABASE_URL, DIET_SUPABASE_KEY)
   : null;
+
 const loginSection = document.getElementById('loginSection');
 const dataSection = document.getElementById('dataSection');
+const detailSection = document.getElementById('detailSection');
 const loginFeedback = document.getElementById('loginFeedback');
 const dataFeedback = document.getElementById('dataFeedback');
+const detailFeedback = document.getElementById('detailFeedback');
 const dataTableBody = document.querySelector('#dataTable tbody');
+const weightTableBody = document.querySelector('#weightTable tbody');
+const emailTableBody = document.querySelector('#emailTable tbody');
+const detailEmail = document.getElementById('detailEmail');
+const detailStatus = document.getElementById('detailStatus');
+const detailSummary = document.getElementById('detailSummary');
+const detailDiagnosis = document.getElementById('detailDiagnosis');
 const adminPassword = document.getElementById('adminPassword');
 const loginButton = document.getElementById('loginButton');
 const reloadButton = document.getElementById('reloadButton');
+const detailCloseButton = document.getElementById('detailCloseButton');
 let adminSessionPassword = '';
 
+const STATUS_LABELS = {
+  registered: '仮登録（未開始）',
+  active: '進行中',
+  continuing: '継続中',
+  ended: '終了'
+};
+
+const CHECKIN_LABELS = {
+  week1: '開始1週間後',
+  month1: '1か月目',
+  month2: '2か月目',
+  month3: '3か月目'
+};
+
+const EMAIL_STATUS_LABELS = {
+  scheduled: '予約済み',
+  cancel_requested: 'キャンセル処理中',
+  canceled: 'キャンセル済み'
+};
+
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function fmtDate(value){
+  if(!value) return '-';
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? esc(value) : d.toLocaleString('ja-JP');
+}
+function fmtWeight(value){ return value == null ? '-' : esc(value) + ' kg'; }
+function checkinLabel(type){
+  if(!type) return '初期記録';
+  if(CHECKIN_LABELS[type]) return CHECKIN_LABELS[type];
+  const m = /^continue_(\d+)$/.exec(type);
+  return m ? '継続 ' + m[1] + '回目' : esc(type);
+}
+function statusBadge(status){
+  const label = STATUS_LABELS[status] || status || '-';
+  return '<span class="badge ' + esc(status || '') + '">' + esc(label) + '</span>';
+}
+function setStatusBadge(el, status){
+  el.className = 'badge ' + (status || '');
+  el.textContent = STATUS_LABELS[status] || status || '-';
+}
 
 async function loadRegistrations(password = adminSessionPassword){
   dataFeedback.textContent = '登録データを読み込んでいます...';
@@ -106,7 +203,7 @@ async function loadRegistrations(password = adminSessionPassword){
   if(!DIET_SUPABASE_CLIENT){
     dataFeedback.textContent = '読み込みエラー: Supabase ライブラリを読み込めませんでした。ページを再読み込みしてください。';
     dataFeedback.className = 'feedback error';
-    return;
+    return false;
   }
   const { data, error } = await DIET_SUPABASE_CLIENT.rpc('get_diet_registrations', {
     admin_password: password
@@ -129,14 +226,97 @@ async function loadRegistrations(password = adminSessionPassword){
   dataFeedback.className = 'feedback success';
   data.forEach(row=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = '<td>'+esc(row.registered_at)+'</td>'
+    tr.innerHTML = '<td>'+esc(fmtDate(row.registered_at))+'</td>'
       + '<td>'+esc(row.email)+'</td>'
-      + '<td>'+(row.weight == null ? '' : esc(row.weight)+' kg')+'</td>'
+      + '<td>'+statusBadge(row.program_status)+'</td>'
+      + '<td>'+fmtWeight(row.weight)+'</td>'
+      + '<td>'+fmtWeight(row.target_weight)+'</td>'
       + '<td>'+esc(row.plan)+'</td>'
-      + '<td>'+esc(row.tags)+'</td>';
+      + '<td><button class="secondary small" data-id="'+esc(row.id)+'">詳細</button></td>';
+    tr.querySelector('button').addEventListener('click', ()=>loadDetail(row.id));
     dataTableBody.appendChild(tr);
   });
   return true;
+}
+
+async function loadDetail(id){
+  detailSection.classList.remove('hidden');
+  detailSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  detailFeedback.textContent = '読み込んでいます...';
+  detailFeedback.className = 'feedback';
+  detailEmail.textContent = '-';
+  setStatusBadge(detailStatus, '');
+  detailSummary.innerHTML = '';
+  detailDiagnosis.textContent = '';
+  weightTableBody.innerHTML = '';
+  emailTableBody.innerHTML = '';
+
+  const { data, error } = await DIET_SUPABASE_CLIENT.rpc('get_diet_registration_detail', {
+    admin_password: adminSessionPassword,
+    target_id: id
+  });
+  if(error){
+    detailFeedback.textContent = '読み込みエラー: ' + (error.message || error);
+    detailFeedback.className = 'feedback error';
+    return;
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if(!row){
+    detailFeedback.textContent = 'データが見つかりませんでした。';
+    detailFeedback.className = 'feedback error';
+    return;
+  }
+  detailFeedback.textContent = '';
+  detailEmail.textContent = row.email || '-';
+  setStatusBadge(detailStatus, row.program_status);
+
+  const history = Array.isArray(row.weight_history) ? row.weight_history : [];
+  const latestWeight = history.length ? history[history.length - 1].weight : row.weight;
+
+  const items = [
+    ['開始体重', fmtWeight(row.weight)],
+    ['目標体重', fmtWeight(row.target_weight)],
+    ['直近の体重', fmtWeight(latestWeight)],
+    ['登録日時', esc(fmtDate(row.registered_at))],
+    ['開始日時', esc(fmtDate(row.started_at))],
+    ['終了日時', esc(fmtDate(row.ended_at))],
+    ['テストモード', row.test_mode ? 'ON' : 'OFF']
+  ];
+  detailSummary.innerHTML = items.map(([label, value])=>
+    '<div class="summary-item"><p class="label">'+esc(label)+'</p><p class="value">'+value+'</p></div>'
+  ).join('');
+
+  const diagnosisParts = [];
+  if(row.plan) diagnosisParts.push('【プラン】' + row.plan);
+  if(row.tags) diagnosisParts.push('【タグ】' + row.tags);
+  if(row.summary) diagnosisParts.push('【診断結果】\n' + row.summary);
+  detailDiagnosis.textContent = diagnosisParts.join('\n\n') || '記録なし';
+
+  if(!history.length){
+    weightTableBody.innerHTML = '<tr><td colspan="4" class="small">体重記録はまだありません。</td></tr>';
+  } else {
+    history.forEach(entry=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+esc(fmtDate(entry.recorded_at))+'</td>'
+        + '<td>'+fmtWeight(entry.weight)+'</td>'
+        + '<td>'+esc(checkinLabel(entry.checkin_type))+'</td>'
+        + '<td>'+esc(entry.feedback_sent_at ? fmtDate(entry.feedback_sent_at) : '-')+'</td>';
+      weightTableBody.appendChild(tr);
+    });
+  }
+
+  const emails = Array.isArray(row.scheduled_emails) ? row.scheduled_emails : [];
+  if(!emails.length){
+    emailTableBody.innerHTML = '<tr><td colspan="3" class="small">予約メールはありません。</td></tr>';
+  } else {
+    emails.forEach(entry=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>'+esc(checkinLabel(entry.milestone))+'</td>'
+        + '<td>'+esc(fmtDate(entry.scheduled_for))+'</td>'
+        + '<td>'+esc(EMAIL_STATUS_LABELS[entry.status] || entry.status)+'</td>';
+      emailTableBody.appendChild(tr);
+    });
+  }
 }
 
 function showAdmin(){
@@ -168,7 +348,8 @@ loginButton.addEventListener('click',async ()=>{
 adminPassword.addEventListener('keydown',event=>{
   if(event.key === 'Enter') loginButton.click();
 });
-reloadButton.addEventListener('click',loadRegistrations);
+reloadButton.addEventListener('click',()=>loadRegistrations());
+detailCloseButton.addEventListener('click',()=>detailSection.classList.add('hidden'));
 </script>
 </body>
 </html>
