@@ -1,5 +1,5 @@
 const RESEND_ENDPOINT = 'https://api.resend.com/emails';
-const PROGRAM_URL = 'https://taz-x.tokyo/';
+const PROGRAM_URL = 'https://diet.taz-co.jp/';
 
 const MILESTONES = {
   week1: {
