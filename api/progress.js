@@ -66,7 +66,7 @@ async function startProgram(token) {
   const definitions = profile.test_mode
     ? Object.entries(MILESTONES).map(([milestone, item]) => ({ milestone, delayMinutes: item.minutes }))
     : [
-        { milestone: 'week1', delayMinutes: 7 * 24 * 60 },
+        { milestone: 'week1', delayMinutes: 14 * 24 * 60 },
         { milestone: 'month1', delayMinutes: 29 * 24 * 60 }
       ];
   const scheduled = [];
@@ -186,9 +186,7 @@ module.exports = async function handler(request, response) {
         ok: true,
         started: true,
         testMode: result.profile.test_mode,
-        message: result.profile.test_mode
-          ? 'プログラムを開始しました。テストメールを1・3・6・9分後に送信します。'
-          : 'プログラムを開始しました。'
+        message: 'プログラムを開始しました。'
       });
     }
 

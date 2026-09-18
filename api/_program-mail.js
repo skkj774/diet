@@ -4,7 +4,7 @@ const PROGRAM_URL = 'https://diet.taz-co.jp/';
 const MILESTONES = {
   week1: {
     minutes: 1,
-    label: '開始1週間後',
+    label: '開始2週間後',
     subject: '【TAZ】ダイエット開始後の継続確認',
     heading: 'まずは、続けられているか確認しましょう',
     body: '完璧にできていなくても問題ありません。専用ページで現在の体重を記録し、できたことを一つ確認してください。'
