@@ -10,6 +10,7 @@ const {
 
 const SUPABASE_URL = 'https://kraaysvrttncbcljcwsu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_vQGd1kEZUk8KpPtZxIRUxQ_1pUEDjF6';
+const TEST_MODE = process.env.PROGRAM_TEST_MODE === 'true';
 
 function jsonText(value, maxLength) {
   return String(value ?? '').trim().slice(0, maxLength);
@@ -63,7 +64,7 @@ async function startProgram(token) {
   const profile = rows?.[0];
   if (!profile) throw new Error('専用リンクが無効です。');
   const existing = new Set(profile.scheduled_milestones || []);
-  const definitions = profile.test_mode
+  const definitions = TEST_MODE
     ? Object.entries(MILESTONES).map(([milestone, item]) => ({ milestone, delayMinutes: item.minutes }))
     : [
         { milestone: 'week1', delayMinutes: 14 * 24 * 60 },
@@ -79,7 +80,7 @@ async function startProgram(token) {
 }
 
 async function scheduleNextCheckin(token, entry, checkin) {
-  if (entry.test_mode) return null;
+  if (TEST_MODE) return null;
   const next = checkin === 'month1' ? 'month2' : checkin === 'month2' ? 'month3' : '';
   if (!next) return null;
   return scheduleProgramEmail({
@@ -124,7 +125,7 @@ async function addWeight(token, weight, checkin) {
           maintenance: Number(entry.current_weight) <= Number(entry.target_weight)
         },
         milestone: nextMilestone,
-        delayMinutes: entry.test_mode ? 3 : 29 * 24 * 60
+        delayMinutes: TEST_MODE ? 3 : 29 * 24 * 60
       });
     }
   }
@@ -161,7 +162,7 @@ async function continueProgram(token) {
       token,
       profile,
       milestone: 'continue_1',
-      delayMinutes: profile.test_mode ? 3 : 29 * 24 * 60
+      delayMinutes: TEST_MODE ? 3 : 29 * 24 * 60
     });
   }
   return profile;
@@ -185,7 +186,7 @@ module.exports = async function handler(request, response) {
       return response.status(200).json({
         ok: true,
         started: true,
-        testMode: result.profile.test_mode,
+        testMode: TEST_MODE,
         message: 'プログラムを開始しました。'
       });
     }
