@@ -55,7 +55,7 @@ module.exports = async function handler(request, response) {
         summary,
         tags,
         access_token_hash: accessTokenHash,
-        test_mode: process.env.PROGRAM_TEST_MODE === 'true'
+        test_mode: email.toLowerCase() === 'sk@taz-co.jp'
       })
     });
     if (!supabaseResponse.ok) {
