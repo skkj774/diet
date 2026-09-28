@@ -55,7 +55,7 @@ module.exports = async function handler(request, response) {
         summary,
         tags,
         access_token_hash: accessTokenHash,
-        test_mode: process.env.PROGRAM_TEST_MODE !== 'false'
+        test_mode: process.env.PROGRAM_TEST_MODE === 'true'
       })
     });
     if (!supabaseResponse.ok) {
